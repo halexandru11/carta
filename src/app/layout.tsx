@@ -1,6 +1,7 @@
 import '~/styles/globals.css';
 
 import { type Metadata } from 'next';
+import { ThemeProvider } from '~/components/theme';
 import { GeistSans } from 'geist/font/sans';
 
 export const metadata: Metadata = {
@@ -15,8 +16,17 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>{children}</body>
+    <html lang='en' className={`${GeistSans.variable}`}>
+      <body>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

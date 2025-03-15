@@ -282,12 +282,12 @@ function Calendar({
         caption_label: 'text-sm font-medium',
         nav: 'space-x-1 flex items-center ',
         button_previous: cn(
-          buttonVariants({ variant: 'outline' }),
+          buttonVariants({ variant: 'outline-secondary' }),
           'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-5 top-5',
           disableLeftNavigation() && 'pointer-events-none',
         ),
         button_next: cn(
-          buttonVariants({ variant: 'outline' }),
+          buttonVariants({ variant: 'outline-secondary' }),
           'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-5 top-5',
           disableRightNavigation() && 'pointer-events-none',
         ),
@@ -297,7 +297,7 @@ function Calendar({
         week: 'flex w-full mt-2',
         day: 'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 rounded-1',
         day_button: cn(
-          buttonVariants({ variant: 'ghost' }),
+          buttonVariants({ variant: 'ghost-secondary' }),
           'h-9 w-9 p-0 font-normal aria-selected:opacity-100 rounded-l-md rounded-r-md',
         ),
         range_end: 'day-range-end',
@@ -825,7 +825,7 @@ const DatetimePicker = React.forwardRef<Partial<DatetimePickerRef>, DatetimePick
       <Popover>
         <PopoverTrigger asChild disabled={disabled}>
           <Button
-            variant='outline'
+            variant='outline-secondary'
             className={cn(
               'w-full justify-start text-left font-normal',
               !displayDate && 'text-muted-foreground',
