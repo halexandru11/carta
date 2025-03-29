@@ -4,7 +4,7 @@ import { cn } from '~/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -14,14 +14,17 @@ const buttonVariants = cva(
         info: 'hover:bg-info/90 bg-info text-info-foreground shadow-sm',
         success: 'hover:bg-success/90 bg-success text-success-foreground shadow-sm',
         warning: 'hover:bg-warning/90 bg-warning text-warning-foreground shadow-sm',
-        'outline-primary': 'border text-primary border-primary bg-background shadow-sm hover:bg-accent',
+        'outline-primary':
+          'border border-primary bg-background text-primary shadow-sm hover:bg-accent',
         'outline-secondary':
           'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
         'outline-destructive':
           'border border-destructive bg-background text-destructive shadow-sm hover:bg-destructive hover:text-destructive-foreground',
         'outline-info': 'border border-info bg-background text-info shadow-sm hover:bg-accent',
-        'outline-success': 'border border-success bg-background text-success shadow-sm hover:bg-accent',
-        'outline-warning': 'border border-warning bg-background text-warning shadow-sm hover:bg-accent',
+        'outline-success':
+          'border border-success bg-background text-success shadow-sm hover:bg-accent',
+        'outline-warning':
+          'border border-warning bg-background text-warning shadow-sm hover:bg-accent',
         'ghost-primary': 'text-primary hover:bg-accent',
         'ghost-secondary': 'hover:bg-accent hover:text-accent-foreground',
         'ghost-destructive':
@@ -42,6 +45,7 @@ const buttonVariants = cva(
         sm: 'h-8 rounded-md px-2.5 text-xs',
         lg: 'h-10 rounded-md px-8',
         icon: 'h-9 w-9',
+        'icon-sm': 'h-8 w-8',
         link: 'gap-1.5 rounded-none p-0',
       },
     },
