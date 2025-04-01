@@ -1,5 +1,19 @@
 # Carta - Online Document Editor
 
+## Roadmap
+- [ ] Font size, Font family
+- [ ] Text color, Background color
+- [ ] Page Break
+- [ ] Horizontal Rule
+- [ ] Column Layout
+- [ ] Table cells resize
+- [ ] Image resize
+- [ ] Variables: used in templates to help creating customized documents
+- [ ] Add a database to store contact & companies to generate documents from templates. Also save the templates and documents in the database
+- [ ] Integrate AI to help write templates and documents
+
+### Achieved so far
+
 ### 1 Apr 2025
 - [x] Text formatting: normal, headings 1-6
 - [x] Ordered/Unordered/Check lists
