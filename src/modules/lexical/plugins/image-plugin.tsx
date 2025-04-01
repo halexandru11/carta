@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
 import { $insertNodes } from 'lexical';
 import { ImageIcon } from 'lucide-react';
 
@@ -18,6 +19,7 @@ import { $createImageNode } from '../nodes/image-node';
 
 export default function ImagePlugin() {
   const [file, setFile] = useState<File>();
+  const [altText, setAltText] = useState('');
   const [editor] = useLexicalComposerContext();
 
   const onAddImage = () => {
@@ -25,10 +27,11 @@ export default function ImagePlugin() {
     if (file) src = URL.createObjectURL(file);
 
     editor.update(() => {
-      const node = $createImageNode({ src, altText: 'Uploaded image' });
+      const node = $createImageNode({ src, altText });
       $insertNodes([node]);
     });
     setFile(undefined);
+    setAltText('');
   };
 
   return (
@@ -43,24 +46,36 @@ export default function ImagePlugin() {
           <DialogHeader>
             <DialogTitle>Add Image</DialogTitle>
           </DialogHeader>
-          <div>
-            <Input
-              type='file'
-              accept='image/*'
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setFile(file);
-                }
-                e.target.files = null;
-              }}
-            />
+          <div className='grid grid-cols-1 gap-y-4'>
+            <div>
+              <Label>Image</Label>
+              <Input
+                type='file'
+                accept='image/*'
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFile(file);
+                  }
+                  e.target.files = null;
+                }}
+              />
+            </div>
+            <div>
+              <Label>Alt Text</Label>
+              <Input
+                value={altText}
+                onChange={(e) => {
+                  const text = e.target.value;
+                  setAltText(text);
+                }}
+                placeholder='Descriptive alternate text'
+              />
+            </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant='ghost-secondary'>
-                Cancel
-              </Button>
+              <Button variant='ghost-secondary'>Cancel</Button>
             </DialogClose>
             <DialogClose asChild>
               <Button onClick={onAddImage} disabled={!file}>

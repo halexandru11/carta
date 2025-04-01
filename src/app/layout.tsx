@@ -1,7 +1,7 @@
 import '~/styles/globals.css';
 
 import { type Metadata } from 'next';
-import { ThemeProvider } from '~/components/theme';
+import { ThemeDropdown, ThemeProvider } from '~/components/theme';
 import { GeistSans } from 'geist/font/sans';
 
 export const metadata: Metadata = {
@@ -25,6 +25,9 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           disableTransitionOnChange
         >
           {children}
+          <div className='absolute right-2 top-2'>
+            <ThemeDropdown />
+          </div>
         </ThemeProvider>
       </body>
     </html>
