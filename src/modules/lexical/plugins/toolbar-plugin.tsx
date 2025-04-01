@@ -1,7 +1,6 @@
 'use client';
 
 import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
-import { $createCodeNode, $isCodeNode, CODE_LANGUAGE_MAP } from '@lexical/code';
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import {
   $isListNode,
@@ -15,23 +14,11 @@ import {
   $createHeadingNode,
   $createQuoteNode,
   $isHeadingNode,
-  $isQuoteNode,
   HeadingTagType,
 } from '@lexical/rich-text';
-import {
-  $getSelectionStyleValueForProperty,
-  $isParentElementRTL,
-  $patchStyleText,
-  $setBlocksType,
-} from '@lexical/selection';
-import { $isTableNode, $isTableSelection } from '@lexical/table';
-import {
-  $findMatchingParent,
-  $getNearestBlockElementAncestorOrThrow,
-  $getNearestNodeOfType,
-  $isEditorIsNestedEditor,
-  mergeRegister,
-} from '@lexical/utils';
+import { $setBlocksType } from '@lexical/selection';
+import { $isTableNode } from '@lexical/table';
+import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
 import { Button } from '~/components/ui/button';
 import {
   Select,
@@ -43,22 +30,18 @@ import {
 import { Separator } from '~/components/ui/separator';
 import {
   $createParagraphNode,
-  $getNodeByKey,
   $getSelection,
   $isElementNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
-  $isTextNode,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   COMMAND_PRIORITY_NORMAL,
-  ElementFormatType,
   FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
   KEY_MODIFIER_COMMAND,
   LexicalEditor,
-  NodeKey,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
@@ -69,8 +52,6 @@ import {
   AlignLeftIcon,
   AlignRightIcon,
   BoldIcon,
-  CodeIcon,
-  CodeXmlIcon,
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
@@ -94,6 +75,8 @@ import { z } from 'zod';
 
 import { getSelectedNode } from '../utils/get-selected-node';
 import { sanitizeUrl } from '../utils/url';
+import ImagePlugin from './image-plugin';
+import { TablePlugin } from './table-plugin';
 
 const COMMAND_PRIORITY_LOW = 1;
 
@@ -105,7 +88,6 @@ const BlockType = z.enum([
   'h4',
   'h5',
   'h6',
-  'code',
   'quote',
   'bullet',
   'number',
@@ -121,7 +103,6 @@ const blockTypeTo: Record<BlockType, [string, LucideIcon]> = {
   h4: ['Heading 4', Heading4Icon],
   h5: ['Heading 5', Heading5Icon],
   h6: ['Heading 6', Heading6Icon],
-  code: ['Code Block', CodeXmlIcon],
   quote: ['Quote', TextQuoteIcon],
   bullet: ['Bullet List', ListIcon],
   number: ['Numbered List', ListOrderedIcon],
@@ -137,42 +118,21 @@ type ToolbarPluginProps = {
 
 export function ToolbarPlugin(props: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
-  const [activeEditor, setActiveEditor] = useState(editor);
   const toolbarRef = useRef(null);
   const [blockType, setBlockType] = useState<BlockType>(BlockType.enum.paragraph);
   const [rootType, setRootType] = useState<RootType>(RootType.enum.root);
-  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
-  const [elementFormat, setElementFormat] = useState<ElementFormatType>('left');
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const [fontSize, setFontSize] = useState<string>('15px');
-  const [fontColor, setFontColor] = useState<string>('#000');
-  const [bgColor, setBgColor] = useState<string>('#fff');
-  const [fontFamily, setFontFamily] = useState<string>('Arial');
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
   const [isLink, setIsLink] = useState(false);
-  const [isCode, setIsCode] = useState(false);
-  const [codeLanguage, setCodeLanguage] = useState<string>('');
-  // const [modal, showModal] = useModal();
-  const [isRTL, setIsRTL] = useState(false);
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const [isImageCaption, setIsImageCaption] = useState(false);
 
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
-      if (activeEditor !== editor && $isEditorIsNestedEditor(activeEditor)) {
-        const rootElement = activeEditor.getRootElement();
-        setIsImageCaption(
-          !!rootElement?.parentElement?.classList.contains('image-caption-container'),
-        );
-      } else {
-        setIsImageCaption(false);
-      }
-
       const anchorNode = selection.anchor.getNode();
       let element =
         anchorNode.getKey() === 'root'
@@ -186,15 +146,13 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         element = anchorNode.getTopLevelElementOrThrow();
       }
       const elementKey = element.getKey();
-      const elementDOM = activeEditor.getElementByKey(elementKey);
+      const elementDOM = editor.getElementByKey(elementKey);
 
       // Update text format
       setIsBold(selection.hasFormat('bold'));
       setIsItalic(selection.hasFormat('italic'));
       setIsUnderline(selection.hasFormat('underline'));
       setIsStrikethrough(selection.hasFormat('strikethrough'));
-      setIsCode(selection.hasFormat('code'));
-      setIsRTL($isParentElementRTL(selection));
 
       // Update links
       const node = getSelectedNode(selection);
@@ -213,7 +171,6 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       }
 
       if (elementDOM !== null) {
-        setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
           const type = parentList ? parentList.getListType() : element.getListType();
@@ -223,18 +180,10 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
           if (type as BlockType) {
             setBlockType(type as BlockType);
           }
-          if ($isCodeNode(element)) {
-            const language = element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
-            setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : '');
-            return;
-          }
         }
       }
 
       // Handle buttons
-      setFontColor($getSelectionStyleValueForProperty(selection, 'color', '#000'));
-      setBgColor($getSelectionStyleValueForProperty(selection, 'background-color', '#fff'));
-      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family', 'Arial'));
       let matchingParent;
       if ($isLinkNode(parent)) {
         // If node is a link, we need to fetch the parent paragraph node to set format
@@ -243,26 +192,13 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
           (parentNode) => $isElementNode(parentNode) && !parentNode.isInline(),
         );
       }
-
-      // If matchingParent is a valid node, pass it's format type
-      setElementFormat(
-        $isElementNode(matchingParent)
-          ? matchingParent.getFormatType()
-          : $isElementNode(node)
-            ? node.getFormatType()
-            : parent?.getFormatType() || 'left',
-      );
     }
-    if ($isRangeSelection(selection) || $isTableSelection(selection)) {
-      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', '15px'));
-    }
-  }, [editor, activeEditor]);
+  }, [editor]);
 
   useEffect(() => {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
-      (_payload, newEditor) => {
-        setActiveEditor(newEditor);
+      (_payload) => {
         $updateToolbar();
         return false;
       },
@@ -271,22 +207,22 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
   }, [editor, $updateToolbar]);
 
   useEffect(() => {
-    activeEditor.getEditorState().read(() => {
+    editor.getEditorState().read(() => {
       $updateToolbar();
     });
-  }, [activeEditor, $updateToolbar]);
+  }, [editor, $updateToolbar]);
 
   useEffect(() => {
     return mergeRegister(
       editor.registerEditableListener((editable) => {
         setIsEditable(editable);
       }),
-      activeEditor.registerUpdateListener(({ editorState }) => {
+      editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
           $updateToolbar();
         });
       }),
-      activeEditor.registerCommand(
+      editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         (_payload, _newEditor) => {
           $updateToolbar();
@@ -294,7 +230,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         },
         COMMAND_PRIORITY_LOW,
       ),
-      activeEditor.registerCommand(
+      editor.registerCommand(
         CAN_UNDO_COMMAND,
         (payload) => {
           setCanUndo(payload);
@@ -302,7 +238,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         },
         COMMAND_PRIORITY_LOW,
       ),
-      activeEditor.registerCommand(
+      editor.registerCommand(
         CAN_REDO_COMMAND,
         (payload) => {
           setCanRedo(payload);
@@ -311,10 +247,10 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [editor, activeEditor, $updateToolbar]);
+  }, [editor, $updateToolbar]);
 
   useEffect(() => {
-    return activeEditor.registerCommand(
+    return editor.registerCommand(
       KEY_MODIFIER_COMMAND,
       (payload) => {
         const event: KeyboardEvent = payload;
@@ -330,128 +266,26 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
             props.setIsLinkEditMode(false);
             url = null;
           }
-          return activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
+          return editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
         }
         return false;
       },
       COMMAND_PRIORITY_NORMAL,
     );
-  }, [activeEditor, isLink, props.setIsLinkEditMode]);
-
-  const applyStyleText = useCallback(
-    (styles: Record<string, string>, skipHistoryStack?: boolean) => {
-      activeEditor.update(
-        () => {
-          const selection = $getSelection();
-          if (selection !== null) {
-            $patchStyleText(selection, styles);
-          }
-        },
-        skipHistoryStack ? { tag: 'historic' } : {},
-      );
-    },
-    [activeEditor],
-  );
-
-  const clearFormatting = useCallback(() => {
-    activeEditor.update(() => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection) || $isTableSelection(selection)) {
-        const anchor = selection.anchor;
-        const focus = selection.focus;
-        const nodes = selection.getNodes();
-        const extractedNodes = selection.extract();
-
-        if (anchor.key === focus.key && anchor.offset === focus.offset) {
-          return;
-        }
-
-        nodes.forEach((node, idx) => {
-          // We split the first and last node by the selection
-          // So that we don't format unselected text inside those nodes
-          if ($isTextNode(node)) {
-            // Use a separate variable to ensure TS does not lose the refinement
-            let textNode = node;
-            if (idx === 0 && anchor.offset !== 0) {
-              textNode = textNode.splitText(anchor.offset)[1] || textNode;
-            }
-            if (idx === nodes.length - 1) {
-              textNode = textNode.splitText(focus.offset)[0] || textNode;
-            }
-            /**
-             * If the selected text has one format applied
-             * selecting a portion of the text, could
-             * clear the format to the wrong portion of the text.
-             *
-             * The cleared text is based on the length of the selected text.
-             */
-            // We need this in case the selected text only has one format
-            const extractedTextNode = extractedNodes[0];
-            if (nodes.length === 1 && $isTextNode(extractedTextNode)) {
-              textNode = extractedTextNode;
-            }
-
-            if (textNode.__style !== '') {
-              textNode.setStyle('');
-            }
-            if (textNode.__format !== 0) {
-              textNode.setFormat(0);
-              $getNearestBlockElementAncestorOrThrow(textNode).setFormat('');
-            }
-            node = textNode;
-          } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
-            node.replace($createParagraphNode(), true);
-            // } else if ($isDecoratorBlockNode(node)) {
-            //   node.setFormat('');
-          }
-        });
-      }
-    });
-  }, [activeEditor]);
-
-  const onFontColorSelect = useCallback(
-    (value: string, skipHistoryStack: boolean) => {
-      applyStyleText({ color: value }, skipHistoryStack);
-    },
-    [applyStyleText],
-  );
-
-  const onBgColorSelect = useCallback(
-    (value: string, skipHistoryStack: boolean) => {
-      applyStyleText({ 'background-color': value }, skipHistoryStack);
-    },
-    [applyStyleText],
-  );
+  }, [editor, isLink, props.setIsLinkEditMode]);
 
   const insertLink = useCallback(() => {
     if (!isLink) {
       props.setIsLinkEditMode(true);
-      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
     } else {
       props.setIsLinkEditMode(false);
-      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
-  }, [activeEditor, isLink, props.setIsLinkEditMode]);
-
-  const onCodeLanguageSelect = useCallback(
-    (value: string) => {
-      activeEditor.update(() => {
-        if (selectedElementKey !== null) {
-          const node = $getNodeByKey(selectedElementKey);
-          if ($isCodeNode(node)) {
-            node.setLanguage(value);
-          }
-        }
-      });
-    },
-    [activeEditor, selectedElementKey],
-  );
-
-  const canViewerSeeInsertDropdown = !isImageCaption;
-  const canViewerSeeInsertCodeButton = !isImageCaption;
+  }, [editor, isLink, props.setIsLinkEditMode]);
 
   return (
-    <div className='flex items-center gap-x-0.5 p-1' ref={toolbarRef}>
+    <div className='flex items-center p-1' ref={toolbarRef}>
       <Button
         size='icon-sm'
         variant='ghost-secondary'
@@ -459,7 +293,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
         aria-label='Undo'
       >
-        <UndoIcon className='size-4 text-muted-foreground' />
+        <UndoIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -468,10 +302,10 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
         aria-label='Redo'
       >
-        <RedoIcon className='size-4 text-muted-foreground' />
+        <RedoIcon className='size-4' />
       </Button>
-      <Separator orientation='vertical' className='h-6' />
-      <BlockFormatSelect editor={activeEditor} rootType={rootType} blockType={blockType} />
+      <Separator orientation='vertical' className='mx-1 h-6' />
+      <BlockFormatSelect editor={editor} rootType={rootType} blockType={blockType} />
       <Button
         size='icon-sm'
         variant={isBold ? 'secondary' : 'ghost-secondary'}
@@ -479,7 +313,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
         aria-label='Format Bold'
       >
-        <BoldIcon className='size-4 text-muted-foreground' />
+        <BoldIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -488,7 +322,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
         aria-label='Format Italics'
       >
-        <ItalicIcon className='size-4 text-muted-foreground' />
+        <ItalicIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -497,7 +331,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
         aria-label='Format Underline'
       >
-        <UnderlineIcon className='size-4 text-muted-foreground' />
+        <UnderlineIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -506,16 +340,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')}
         aria-label='Format Strikethrough'
       >
-        <StrikethroughIcon className='size-4 text-muted-foreground' />
-      </Button>
-      <Button
-        size='icon-sm'
-        variant={isCode ? 'secondary' : 'ghost-secondary'}
-        disabled={!isEditable}
-        onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')}
-        aria-label='Insert Code Block'
-      >
-        <CodeIcon className='size-4 text-muted-foreground' />
+        <StrikethroughIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -524,9 +349,9 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={insertLink}
         aria-label='Insert Link'
       >
-        <LinkIcon className='size-4 text-muted-foreground' />
+        <LinkIcon className='size-4' />
       </Button>
-      <Separator orientation='vertical' className='h-6' />
+      <Separator orientation='vertical' className='mx-1 h-6' />
       <Button
         size='icon-sm'
         variant='ghost-secondary'
@@ -534,7 +359,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left')}
         aria-label='Left Align'
       >
-        <AlignLeftIcon className='size-4 text-muted-foreground' />
+        <AlignLeftIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -543,7 +368,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center')}
         aria-label='Center Align'
       >
-        <AlignCenterIcon className='size-4 text-muted-foreground' />
+        <AlignCenterIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -552,7 +377,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right')}
         aria-label='Right Align'
       >
-        <AlignRightIcon className='size-4 text-muted-foreground' />
+        <AlignRightIcon className='size-4' />
       </Button>
       <Button
         size='icon-sm'
@@ -561,8 +386,11 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify')}
         aria-label='Justify Align'
       >
-        <AlignJustifyIcon className='size-4 text-muted-foreground' />
+        <AlignJustifyIcon className='size-4' />
       </Button>
+      <Separator orientation='vertical' className='mx-1 h-6' />
+      <ImagePlugin />
+      <TablePlugin />
     </div>
   );
 }
@@ -628,28 +456,6 @@ function BlockFormatSelect({
     }
   };
 
-  const formatCode = () => {
-    if (blockType !== 'code') {
-      editor.update(() => {
-        let selection = $getSelection();
-
-        if (selection !== null) {
-          if (selection.isCollapsed()) {
-            $setBlocksType(selection, () => $createCodeNode());
-          } else {
-            const textContent = selection.getTextContent();
-            const codeNode = $createCodeNode();
-            selection.insertNodes([codeNode]);
-            selection = $getSelection();
-            if ($isRangeSelection(selection)) {
-              selection.insertRawText(textContent);
-            }
-          }
-        }
-      });
-    }
-  };
-
   function handleFormatChange(format: BlockType) {
     switch (format) {
       case BlockType.enum.paragraph:
@@ -675,9 +481,6 @@ function BlockFormatSelect({
       case BlockType.enum.quote:
         formatQuote();
         break;
-      case BlockType.enum.code:
-        formatCode();
-        break;
       default:
         format satisfies never;
     }
@@ -685,13 +488,13 @@ function BlockFormatSelect({
 
   return (
     <Select disabled={disabled} value={blockType} onValueChange={handleFormatChange}>
-      <SelectTrigger className={'h-8 w-fit px-2 [&>span>span]:hidden'}>
+      <SelectTrigger className={'h-8 w-fit gap-1 px-2 [cc&>span>span]:hidden'}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
         {Object.entries(blockTypeTo).map(([key, [name, Icon]]) => (
           <SelectItem key={key} value={key}>
-            <Icon className='size-5 inline mr-1' />
+            <Icon className='mr-1 inline size-5' />
             <span>{name}</span>
           </SelectItem>
         ))}

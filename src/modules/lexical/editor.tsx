@@ -6,7 +6,6 @@ import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
-// import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
 import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -37,6 +36,7 @@ import {
 import { catppuccinTheme } from './catppuccin-theme';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
+import { ImageNode } from './nodes/image-node';
 
 const placeholder = 'Enter some rich text...';
 
@@ -143,21 +143,11 @@ const editorConfig = {
     AutoLinkNode,
     CodeHighlightNode,
     CodeNode,
-    // HashtagNode,
     HeadingNode,
-    // HorizontalRuleNode,
-    // ImageNode,
-    // ImmutableWordNode,
-    // InlineImageNode,
-    // LayoutContainerNode,
-    // LayoutItemNode,
+    ImageNode,
     LinkNode,
     ListItemNode,
     ListNode,
-    // MarkNode,
-    // MentionNode,
-    // OverflowNode,
-    // PageBreakNode,
     QuoteNode,
     TableCellNode,
     TableNode,
@@ -189,7 +179,7 @@ function EditorHelper() {
         <RichTextPlugin
           contentEditable={
             <ContentEditable
-              className='caret-subtext-1 relative min-h-[600px] w-full resize-none p-4 text-text'
+              className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md border p-4 text-text outline-none'
               aria-placeholder={placeholder}
               placeholder={
                 <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
@@ -202,7 +192,6 @@ function EditorHelper() {
         />
         <AutoFocusPlugin />
         <ClearEditorPlugin />
-        {/*<HashtagPlugin />*/}
         <ListPlugin />
         <CheckListPlugin />
         <TablePlugin hasCellMerge hasCellBackgroundColor />
@@ -214,7 +203,6 @@ function EditorHelper() {
         <CheckListPlugin />
         <ListPlugin />
         <HistoryPlugin />
-        <TablePlugin />
       </div>
     </div>
   );
