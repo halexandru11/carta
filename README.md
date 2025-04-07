@@ -1,7 +1,7 @@
 # Carta - Online Document Editor
 
 ## Roadmap
-- [ ] Font size, Font family
+- [ ] Font family
 - [ ] Text color, Background color
 - [ ] Column Layout
 - [ ] Table cells resize
@@ -13,6 +13,7 @@
 #### 8 Apr 2025
 - [x] Page Break
 - [x] Horizontal Rule
+- [x] Font size
 
 #### 1 Apr 2025
 - [x] Text formatting: normal, headings 1-6

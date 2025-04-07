@@ -17,8 +17,8 @@ import {
   $isHeadingNode,
   HeadingTagType,
 } from '@lexical/rich-text';
-import { $setBlocksType } from '@lexical/selection';
-import { $isTableNode } from '@lexical/table';
+import { $getSelectionStyleValueForProperty, $setBlocksType } from '@lexical/selection';
+import { $isTableNode, $isTableSelection } from '@lexical/table';
 import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
 import { Button } from '~/components/ui/button';
 import {
@@ -77,6 +77,7 @@ import { z } from 'zod';
 
 import { getSelectedNode } from '../utils/get-selected-node';
 import { sanitizeUrl } from '../utils/url';
+import { DEFAULT_FONT_SIZE, FontSizePlugin } from './font-size-plugin';
 import { ImagePlugin } from './image-plugin';
 import { PageBreakPlugin } from './page-break-plugin';
 import { TablePlugin } from './table-plugin';
@@ -122,6 +123,7 @@ type ToolbarPluginProps = {
 export function ToolbarPlugin(props: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
+  const [fontSize, setFontSize] = useState(`${DEFAULT_FONT_SIZE}px`);
   const [blockType, setBlockType] = useState<BlockType>(BlockType.enum.paragraph);
   const [rootType, setRootType] = useState<RootType>(RootType.enum.root);
   const [canUndo, setCanUndo] = useState(false);
@@ -204,6 +206,11 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       //       ? node.getFormatType()
       //       : parent?.getFormatType() || 'left',
       // );
+    }
+    if ($isRangeSelection(selection) || $isTableSelection(selection)) {
+      setFontSize(
+        $getSelectionStyleValueForProperty(selection, 'font-size', `${DEFAULT_FONT_SIZE}px`),
+      );
     }
   }, [editor]);
 
@@ -297,7 +304,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
   }, [editor, isLink, props.setIsLinkEditMode]);
 
   return (
-    <div className='mb-2 flex items-center rounded-md bg-card p-1' ref={toolbarRef}>
+    <div className='mb-2 flex items-center rounded-md bg-card p-1 overflow-x-auto' ref={toolbarRef}>
       <Button
         size='icon-sm'
         variant='ghost-secondary'
@@ -316,6 +323,8 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       >
         <RedoIcon className='size-4' />
       </Button>
+      <Separator orientation='vertical' className='mx-1 h-6' />
+      <FontSizePlugin fontSize={fontSize.slice(0, -2)} />
       <Separator orientation='vertical' className='mx-1 h-6' />
       <BlockFormatSelect editor={editor} rootType={rootType} blockType={blockType} />
       <Button
