@@ -10,6 +10,7 @@ import {
   ListNode,
 } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
 import {
   $createHeadingNode,
   $createQuoteNode,
@@ -65,6 +66,7 @@ import {
   ListTodoIcon,
   LucideIcon,
   RedoIcon,
+  SquareSplitVerticalIcon,
   StrikethroughIcon,
   TextIcon,
   TextQuoteIcon,
@@ -402,6 +404,15 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       <ImagePlugin />
       <TablePlugin />
       <PageBreakPlugin />
+      <Button
+        size='icon-sm'
+        variant='ghost-secondary'
+        onClick={() => {
+          editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
+        }}
+      >
+        <SquareSplitVerticalIcon />
+      </Button>
     </div>
   );
 }

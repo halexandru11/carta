@@ -12,6 +12,7 @@ import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
@@ -34,10 +35,10 @@ import {
 } from 'lexical';
 
 import { catppuccinTheme } from './catppuccin-theme';
-import { ToolbarPlugin } from './plugins/toolbar-plugin';
-import { parseAllowedColor, parseAllowedFontSize } from './style-config';
 import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
+import { ToolbarPlugin } from './plugins/toolbar-plugin';
+import { parseAllowedColor, parseAllowedFontSize } from './style-config';
 
 const placeholder = 'Enter some rich text...';
 
@@ -145,6 +146,7 @@ const editorConfig = {
     CodeHighlightNode,
     CodeNode,
     HeadingNode,
+    HorizontalRuleNode,
     ImageNode,
     LinkNode,
     ListItemNode,

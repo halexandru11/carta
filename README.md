@@ -3,7 +3,6 @@
 ## Roadmap
 - [ ] Font size, Font family
 - [ ] Text color, Background color
-- [ ] Horizontal Rule
 - [ ] Column Layout
 - [ ] Table cells resize
 - [ ] Image resize
@@ -13,6 +12,7 @@
 
 #### 8 Apr 2025
 - [x] Page Break
+- [x] Horizontal Rule
 
 #### 1 Apr 2025
 - [x] Text formatting: normal, headings 1-6
