@@ -75,7 +75,8 @@ import { z } from 'zod';
 
 import { getSelectedNode } from '../utils/get-selected-node';
 import { sanitizeUrl } from '../utils/url';
-import ImagePlugin from './image-plugin';
+import { ImagePlugin } from './image-plugin';
+import { PageBreakPlugin } from './page-break-plugin';
 import { TablePlugin } from './table-plugin';
 
 const COMMAND_PRIORITY_LOW = 1;
@@ -171,6 +172,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       }
 
       if (elementDOM !== null) {
+        // setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
           const type = parentList ? parentList.getListType() : element.getListType();
@@ -192,6 +194,14 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
           (parentNode) => $isElementNode(parentNode) && !parentNode.isInline(),
         );
       }
+
+      // setElementFormat(
+      //   $isElementNode(matchingParent)
+      //     ? matchingParent.getFormatType()
+      //     : $isElementNode(node)
+      //       ? node.getFormatType()
+      //       : parent?.getFormatType() || 'left',
+      // );
     }
   }, [editor]);
 
@@ -285,7 +295,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
   }, [editor, isLink, props.setIsLinkEditMode]);
 
   return (
-    <div className='flex items-center p-1' ref={toolbarRef}>
+    <div className='mb-2 flex items-center rounded-md bg-card p-1' ref={toolbarRef}>
       <Button
         size='icon-sm'
         variant='ghost-secondary'
@@ -391,6 +401,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       <Separator orientation='vertical' className='mx-1 h-6' />
       <ImagePlugin />
       <TablePlugin />
+      <PageBreakPlugin />
     </div>
   );
 }

@@ -31,11 +31,11 @@
     --mantle: hsl(220 21% 91%);
     --crust: hsl(220 20% 88%);
 
-    --background: var(--base);
+    --background: var(--crust);
     --foreground: var(--text);
-    --card: var(--crust);
+    --card: var(--base);
     --card-foreground: var(--text);
-    --popover: var(--crust);
+    --popover: var(--base);
     --popover-foreground: var(--text);
     --primary: var(--peach);
     --primary-foreground: var(--base);
@@ -43,7 +43,7 @@
     --secondary-foreground: var(--subtext1);
     --muted: var(--crust);
     --muted-foreground: var(--subtext0);
-    --accent: var(--surface0);
+    --accent: var(--crust);
     --accent-foreground: var(--text);
     --destructive: var(--red);
     --destructive-foreground: var(--base);
@@ -100,11 +100,11 @@
     --mantle: hsl(230.52 18% 19%);
     --crust: hsl(229.41 19% 17%);
 
-    --background: var(--crust);
+    --background: var(--base);
     --foreground: var(--text);
-    --card: var(--base);
+    --card: var(--crust);
     --card-foreground: var(--text);
-    --popover: var(--base);
+    --popover: var(--crust);
     --popover-foreground: var(--text);
     --primary: var(--peach);
     --primary-foreground: var(--base);
@@ -146,6 +146,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

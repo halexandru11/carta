@@ -12,12 +12,13 @@ import {
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { $insertNodes } from 'lexical';
+import { $createParagraphNode, $insertNodes, $isRootOrShadowRoot } from 'lexical';
 import { ImageIcon } from 'lucide-react';
 
 import { $createImageNode } from '../nodes/image-node';
+import { $wrapNodeInElement } from '@lexical/utils';
 
-export default function ImagePlugin() {
+export function ImagePlugin() {
   const [file, setFile] = useState<File>();
   const [altText, setAltText] = useState('');
   const [editor] = useLexicalComposerContext();
@@ -29,6 +30,9 @@ export default function ImagePlugin() {
     editor.update(() => {
       const node = $createImageNode({ src, altText });
       $insertNodes([node]);
+      if ($isRootOrShadowRoot(node.getParentOrThrow())) {
+        $wrapNodeInElement(node, $createParagraphNode).selectEnd();
+      }
     });
     setFile(undefined);
     setAltText('');

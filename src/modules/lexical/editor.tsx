@@ -37,6 +37,7 @@ import { catppuccinTheme } from './catppuccin-theme';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
 import { ImageNode } from './nodes/image-node';
+import { PageBreakNode } from './nodes/page-break-node';
 
 const placeholder = 'Enter some rich text...';
 
@@ -148,6 +149,7 @@ const editorConfig = {
     LinkNode,
     ListItemNode,
     ListNode,
+    PageBreakNode,
     QuoteNode,
     TableCellNode,
     TableNode,
@@ -179,7 +181,7 @@ function EditorHelper() {
         <RichTextPlugin
           contentEditable={
             <ContentEditable
-              className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md border p-4 text-text outline-none'
+              className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
               aria-placeholder={placeholder}
               placeholder={
                 <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
