@@ -17,9 +17,19 @@ import {
   $isHeadingNode,
   HeadingTagType,
 } from '@lexical/rich-text';
-import { $getSelectionStyleValueForProperty, $setBlocksType } from '@lexical/selection';
+import {
+  $getSelectionStyleValueForProperty,
+  $patchStyleText,
+  $setBlocksType,
+} from '@lexical/selection';
 import { $isTableNode, $isTableSelection } from '@lexical/table';
 import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
+import {
+  Color,
+  ColorPicker,
+  DEFAULT_FONT_BG_COLOR,
+  DEFAULT_FONT_COLOR,
+} from '~/components/custom/color-picker';
 import { Button } from '~/components/ui/button';
 import {
   Select,
@@ -47,6 +57,7 @@ import {
   UNDO_COMMAND,
 } from 'lexical';
 import {
+    ALargeSmallIcon,
   AlignCenterIcon,
   AlignJustifyIcon,
   AlignLeftIcon,
@@ -59,10 +70,12 @@ import {
   Heading5Icon,
   Heading6Icon,
   ItalicIcon,
+  LetterTextIcon,
   ListIcon,
   ListOrderedIcon,
   ListTodoIcon,
   LucideIcon,
+  PaintBucketIcon,
   RedoIcon,
   SquareSplitVerticalIcon,
   StrikethroughIcon,
@@ -124,12 +137,14 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
 
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
   const [rootType, setRootType] = useState<RootType>(RootType.enum.root);
   const [blockType, setBlockType] = useState<BlockType>(BlockType.enum.paragraph);
   const [fontSize, setFontSize] = useState(`${DEFAULT_FONT_SIZE}px`);
   const [fontFamily, setFontFamily] = useState<FontFamily>(DEFAULT_FONT_FAMILY);
-  const [canUndo, setCanUndo] = useState(false);
-  const [canRedo, setCanRedo] = useState(false);
+  const [fontColor, setFontColor] = useState<Color>('var(--text)');
+  const [bgColor, setBgColor] = useState<Color>('var(--crust)');
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
@@ -192,6 +207,16 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       }
 
       // Handle buttons
+      setFontColor(
+        $getSelectionStyleValueForProperty(selection, 'color', DEFAULT_FONT_COLOR) as Color,
+      );
+      setBgColor(
+        $getSelectionStyleValueForProperty(
+          selection,
+          'background-color',
+          DEFAULT_FONT_BG_COLOR,
+        ) as Color,
+      );
       setFontFamily(
         $getSelectionStyleValueForProperty(
           selection,
@@ -304,6 +329,35 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
     );
   }, [editor, isLink, setIsLinkEditMode]);
 
+  const applyStyleText = useCallback(
+    (styles: Record<string, string>, skipHistoryStack?: boolean) => {
+      editor.update(
+        () => {
+          const selection = $getSelection();
+          if (selection !== null) {
+            $patchStyleText(selection, styles);
+          }
+        },
+        skipHistoryStack ? { tag: 'historic' } : {},
+      );
+    },
+    [editor],
+  );
+
+  const onFontColorSelect = useCallback(
+    (color: Color, skipHistoryStack?: boolean) => {
+      applyStyleText({ color: color }, skipHistoryStack);
+    },
+    [applyStyleText],
+  );
+
+  const onBgColorSelect = useCallback(
+    (bgColor: Color, skipHistoryStack?: boolean) => {
+      applyStyleText({ 'background-color': bgColor }, skipHistoryStack);
+    },
+    [applyStyleText],
+  );
+
   // const insertLink = useCallback(() => {
   //   if (!isLink) {
   //     setIsLinkEditMode(true);
@@ -388,6 +442,26 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
           <LinkIcon className='size-4' />
         </Button>
       */}
+      <ColorPicker color={fontColor} onColorChange={onFontColorSelect}>
+        <Button
+          size='icon-sm'
+          variant='ghost-secondary'
+          disabled={!isEditable}
+          aria-label='Change Text Color'
+        >
+          <ALargeSmallIcon />
+        </Button>
+      </ColorPicker>
+      <ColorPicker color={bgColor} onColorChange={onBgColorSelect}>
+        <Button
+          size='icon-sm'
+          variant='ghost-secondary'
+          disabled={!isEditable}
+          aria-label='Change Background Color'
+        >
+          <PaintBucketIcon />
+        </Button>
+      </ColorPicker>
       <Separator orientation='vertical' className='mx-1 h-6' />
       <Button
         size='icon-sm'
