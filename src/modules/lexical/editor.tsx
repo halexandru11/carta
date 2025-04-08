@@ -174,6 +174,7 @@ export function Editor() {
 
 function EditorHelper() {
   const isEditable = useLexicalEditable();
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [_isLinkEditMode, setIsLinkEditMode] = useState(false);
 
   return (

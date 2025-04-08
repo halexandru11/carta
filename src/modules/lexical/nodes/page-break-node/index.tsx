@@ -85,6 +85,7 @@ export class PageBreakNode extends DecoratorNode<JSX.Element> {
     return new PageBreakNode(node.__key);
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   static importJSON(_serializedNode: SerializedPageBreakNode): PageBreakNode {
     return $createPageBreakNode();
   }

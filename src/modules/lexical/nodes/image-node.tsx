@@ -4,7 +4,7 @@ import {
   DOMConversionOutput,
   DOMExportOutput,
   NodeKey,
-} from "lexical";
+} from 'lexical';
 
 export const $createImageNode = ({
   altText,
@@ -34,8 +34,8 @@ const convertImageElement = (domNode: Node): DOMConversionOutput | null => {
 export class ImageNode extends DecoratorNode<JSX.Element> {
   __src: string;
   __altText: string;
-  __height: "inherit" | number;
-  __width: "inherit" | number;
+  __height: 'inherit' | number;
+  __width: 'inherit' | number;
   __maxWidth: number;
 
   constructor({
@@ -49,20 +49,20 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     src: string;
     altText: string;
     maxWidth: number;
-    width?: "inherit" | number;
-    height?: "inherit" | number;
+    width?: 'inherit' | number;
+    height?: 'inherit' | number;
     key?: NodeKey;
   }) {
     super(key);
     this.__altText = altText;
-    this.__width = width || "inherit";
-    this.__height = height || "inherit";
+    this.__width = width || 'inherit';
+    this.__height = height || 'inherit';
     this.__maxWidth = maxWidth;
     this.__src = src;
   }
 
   static getType(): string {
-    return "image";
+    return 'image';
   }
 
   static clone(_node: ImageNode): ImageNode {
@@ -77,6 +77,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   decorate(): JSX.Element {
+    /* eslint-disable @next/next/no-img-element*/
     return (
       <img
         src={this.__src}
@@ -91,14 +92,14 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   createDOM(): HTMLElement {
-    const span = document.createElement("span");
+    const span = document.createElement('span');
     return span;
   }
 
   exportDOM(): DOMExportOutput {
-    const image = document.createElement("img");
-    image.setAttribute("src", this.__src);
-    image.setAttribute("alt", this.__altText);
+    const image = document.createElement('img');
+    image.setAttribute('src', this.__src);
+    image.setAttribute('alt', this.__altText);
 
     return { element: image };
   }

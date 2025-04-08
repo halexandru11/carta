@@ -32,7 +32,6 @@ import { Separator } from '~/components/ui/separator';
 import {
   $createParagraphNode,
   $getSelection,
-  $isElementNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
   CAN_REDO_COMMAND,
@@ -227,6 +226,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
   useEffect(() => {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       (_payload) => {
         $updateToolbar();
         return false;
@@ -253,6 +253,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
+        /* eslint-disable @typescript-eslint/no-unused-vars */
         (_payload, _newEditor) => {
           $updateToolbar();
           return false;
