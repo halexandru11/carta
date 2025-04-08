@@ -60,7 +60,6 @@ import {
   Heading5Icon,
   Heading6Icon,
   ItalicIcon,
-  LinkIcon,
   ListIcon,
   ListOrderedIcon,
   ListTodoIcon,
@@ -77,6 +76,7 @@ import { z } from 'zod';
 
 import { getSelectedNode } from '../utils/get-selected-node';
 import { sanitizeUrl } from '../utils/url';
+import { DEFAULT_FONT_FAMILY, FontFamily, FontFamilyPlugin } from './font-family-plugin';
 import { DEFAULT_FONT_SIZE, FontSizePlugin } from './font-size-plugin';
 import { ImagePlugin } from './image-plugin';
 import { PageBreakPlugin } from './page-break-plugin';
@@ -121,11 +121,14 @@ type ToolbarPluginProps = {
 };
 
 export function ToolbarPlugin(props: ToolbarPluginProps) {
+  const { setIsLinkEditMode } = props;
+
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
-  const [fontSize, setFontSize] = useState(`${DEFAULT_FONT_SIZE}px`);
-  const [blockType, setBlockType] = useState<BlockType>(BlockType.enum.paragraph);
   const [rootType, setRootType] = useState<RootType>(RootType.enum.root);
+  const [blockType, setBlockType] = useState<BlockType>(BlockType.enum.paragraph);
+  const [fontSize, setFontSize] = useState(`${DEFAULT_FONT_SIZE}px`);
+  const [fontFamily, setFontFamily] = useState<FontFamily>(DEFAULT_FONT_FAMILY);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [isBold, setIsBold] = useState(false);
@@ -183,21 +186,28 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
           setBlockType(type);
         } else {
           const type = $isHeadingNode(element) ? element.getTag() : element.getType();
-          if (type as BlockType) {
+          if (BlockType.options.includes(type as BlockType)) {
             setBlockType(type as BlockType);
           }
         }
       }
 
       // Handle buttons
-      let matchingParent;
-      if ($isLinkNode(parent)) {
-        // If node is a link, we need to fetch the parent paragraph node to set format
-        matchingParent = $findMatchingParent(
-          node,
-          (parentNode) => $isElementNode(parentNode) && !parentNode.isInline(),
-        );
-      }
+      setFontFamily(
+        $getSelectionStyleValueForProperty(
+          selection,
+          'font-family',
+          DEFAULT_FONT_FAMILY,
+        ) as FontFamily,
+      );
+      // let matchingParent;
+      // if ($isLinkNode(parent)) {
+      //   // If node is a link, we need to fetch the parent paragraph node to set format
+      //   matchingParent = $findMatchingParent(
+      //     node,
+      //     (parentNode) => $isElementNode(parentNode) && !parentNode.isInline(),
+      //   );
+      // }
 
       // setElementFormat(
       //   $isElementNode(matchingParent)
@@ -279,10 +289,10 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
           event.preventDefault();
           let url: string | null;
           if (!isLink) {
-            props.setIsLinkEditMode(true);
+            setIsLinkEditMode(true);
             url = sanitizeUrl('https://');
           } else {
-            props.setIsLinkEditMode(false);
+            setIsLinkEditMode(false);
             url = null;
           }
           return editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
@@ -291,20 +301,20 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       },
       COMMAND_PRIORITY_NORMAL,
     );
-  }, [editor, isLink, props.setIsLinkEditMode]);
+  }, [editor, isLink, setIsLinkEditMode]);
 
-  const insertLink = useCallback(() => {
-    if (!isLink) {
-      props.setIsLinkEditMode(true);
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
-    } else {
-      props.setIsLinkEditMode(false);
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-    }
-  }, [editor, isLink, props.setIsLinkEditMode]);
+  // const insertLink = useCallback(() => {
+  //   if (!isLink) {
+  //     setIsLinkEditMode(true);
+  //     editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+  //   } else {
+  //     setIsLinkEditMode(false);
+  //     editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+  //   }
+  // }, [editor, isLink, setIsLinkEditMode]);
 
   return (
-    <div className='mb-2 flex items-center rounded-md bg-card p-1 overflow-x-auto' ref={toolbarRef}>
+    <div className='mb-2 flex items-center overflow-x-auto rounded-md bg-card p-1' ref={toolbarRef}>
       <Button
         size='icon-sm'
         variant='ghost-secondary'
@@ -324,9 +334,12 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
         <RedoIcon className='size-4' />
       </Button>
       <Separator orientation='vertical' className='mx-1 h-6' />
+      <BlockFormatSelect editor={editor} rootType={rootType} blockType={blockType} />
+      <Separator orientation='vertical' className='mx-1 h-6' />
+      <FontFamilyPlugin fontFamily={fontFamily} />
+      <Separator orientation='vertical' className='mx-1 h-6' />
       <FontSizePlugin fontSize={fontSize.slice(0, -2)} />
       <Separator orientation='vertical' className='mx-1 h-6' />
-      <BlockFormatSelect editor={editor} rootType={rootType} blockType={blockType} />
       <Button
         size='icon-sm'
         variant={isBold ? 'secondary' : 'ghost-secondary'}
@@ -363,15 +376,17 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       >
         <StrikethroughIcon className='size-4' />
       </Button>
-      <Button
-        size='icon-sm'
-        variant={isLink ? 'secondary' : 'ghost-secondary'}
-        disabled={!isEditable}
-        onClick={insertLink}
-        aria-label='Insert Link'
-      >
-        <LinkIcon className='size-4' />
-      </Button>
+      {/*
+        <Button
+          size='icon-sm'
+          variant={isLink ? 'secondary' : 'ghost-secondary'}
+          disabled={!isEditable}
+          onClick={insertLink}
+          aria-label='Insert Link'
+        >
+          <LinkIcon className='size-4' />
+        </Button>
+      */}
       <Separator orientation='vertical' className='mx-1 h-6' />
       <Button
         size='icon-sm'
@@ -519,7 +534,7 @@ function BlockFormatSelect({
 
   return (
     <Select disabled={disabled} value={blockType} onValueChange={handleFormatChange}>
-      <SelectTrigger className={'h-8 w-fit gap-1 px-2 [cc&>span>span]:hidden'}>
+      <SelectTrigger className='h-8 w-fit gap-1 border-none px-2 hover:bg-accent hover:text-accent-foreground'>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

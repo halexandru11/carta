@@ -169,7 +169,7 @@ export function FontSizePlugin({ fontSize, disabled }: { fontSize: string; disab
       <InputNumber
         value={inputValue}
         disabled={disabled}
-        className={'[&_input]:h-7 [&_input]:w-9 [&_input]:px-2 [&_input]:text-center'}
+        className={'[&_input]:h-7 [&_input]:w-8 [&_input]:px-1 [&_input]:text-center'}
         min={MIN_ALLOWED_FONT_SIZE}
         max={MAX_ALLOWED_FONT_SIZE}
         onChange={(value) => setInputValue(value?.toString() || `${DEFAULT_FONT_SIZE}`)}
