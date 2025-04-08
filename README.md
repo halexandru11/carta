@@ -1,6 +1,7 @@
 # Carta - Online Document Editor
 
 ## Roadmap
+
 - [ ] Table cells resize
 - [ ] Image resize
 - [ ] Variables: used in templates to help creating customized documents
@@ -8,6 +9,7 @@
 - [ ] Integrate AI to help write templates and documents
 
 #### 8 Apr 2025
+
 - [x] Page Break
 - [x] Horizontal Rule
 - [x] Font size
@@ -16,6 +18,7 @@
 - [ ] Column Layout
 
 #### 1 Apr 2025
+
 - [x] Text formatting: normal, headings 1-6
 - [x] Ordered/Unordered/Check lists
 - [x] Quote
@@ -23,7 +26,17 @@
 - [x] Insert Image from disk
 
 #### 18 Mar 2025
+
 - [x] Editor layout
 - [x] Text styles: bold, italic, underline, strikethrough
 - [x] Text alignment: left, center, right, justify
 - [x] Undo, Redo
+
+## References
+
+- [https://lexical.dev](https://lexical.dev)
+- [https://playground.lexical.dev](https://playground.lexical.dev)
+- [https://github.com/facebook/lexical](https://github.com/facebook/lexical)
+- [Lexical Crash Course by Usman Abdur Rehman](https://youtu.be/XI6nufqMSek?si=SCpzNxmjimAplmzy)
+- [Lexical Advanced Course by Usman Abdur Rehman](https://youtu.be/XI6nufqMSek?si=rMVeji1B38KNA2Fi)
+- [Lexical Override Nodes by Usman Abdur Rehman](https://youtu.be/LnEmBb6ABl8?si=T8zBK_-0P1w1H4PU)
