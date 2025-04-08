@@ -11,7 +11,16 @@ export const catppuccinTheme: EditorThemeClasses = {
     h3: 'text-xl font-bold',
     h4: 'text-lg font-bold',
     h5: 'font-bold',
-    h6: 'text-sm font-bold',
+    h6: 'font-bold text-muted-foreground',
+  },
+  text: {
+    bold: 'font-bold',
+    italic: 'italic',
+    overflowed: '',
+    hashtag: '',
+    underline: 'underline',
+    strikethrough: 'line-through',
+    underlineStrikethrough: '[text-decoration:underline_line-through]',
   },
   list: {
     nested: {
@@ -23,19 +32,7 @@ export const catppuccinTheme: EditorThemeClasses = {
     listitemChecked: "max-w-md outline-none space-y-1 list-none before:cursor-pointer before:content-['✓'] before:text-base before:inline-flex before:items-center before:justify-center before:mr-2 before:size-4 before:bg-primary before:rounded",
     listitemUnchecked: "max-w-md outline-none space-y-1 list-none text-muted-foreground before:cursor-pointer before:content-[' '] before:inline-block before:align-middle before:mr-2 before:h-4 before:w-4 before:border before:border-primary before:rounded",
   },
-  image: '',
-  link: 'font-medium text-blue hover:underline',
-  hashtag: '',
-  table: '',
+  hr: 'border-t-[2px] border-input',
   tableCell: 'min-w-10 border border-overlay0 p-2',
   tableCellHeader: 'bg-surface0',
-  text: {
-    bold: 'font-bold',
-    italic: 'italic',
-    overflowed: '',
-    hashtag: '',
-    underline: 'underline',
-    strikethrough: 'line-through',
-    underlineStrikethrough: '[text-decoration:underline_line-through]',
-  },
 };

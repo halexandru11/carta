@@ -70,7 +70,6 @@ import {
   Heading5Icon,
   Heading6Icon,
   ItalicIcon,
-  LetterTextIcon,
   ListIcon,
   ListOrderedIcon,
   ListTodoIcon,

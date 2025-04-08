@@ -1,7 +1,6 @@
 # Carta - Online Document Editor
 
 ## Roadmap
-- [ ] Column Layout
 - [ ] Table cells resize
 - [ ] Image resize
 - [ ] Variables: used in templates to help creating customized documents
@@ -13,7 +12,8 @@
 - [x] Horizontal Rule
 - [x] Font size
 - [x] Font family
-- [x] Text color, Background color
+- [x] Text color, Background color. Sometimes it applies the default colors which is not the expected behaviour
+- [ ] Column Layout
 
 #### 1 Apr 2025
 - [x] Text formatting: normal, headings 1-6
