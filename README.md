@@ -2,11 +2,13 @@
 
 ## Roadmap
 
+- [ ] Integrate AI to help write templates and documents
+- [ ] Save/Download
+- [ ] Column Layout
 - [ ] Table cells resize
 - [ ] Image resize
 - [ ] Variables: used in templates to help creating customized documents
 - [ ] Add a database to store contact & companies to generate documents from templates. Also save the templates and documents in the database
-- [ ] Integrate AI to help write templates and documents
 
 #### 8 Apr 2025
 
@@ -15,7 +17,6 @@
 - [x] Font size
 - [x] Font family
 - [x] Text color, Background color. Sometimes it applies the default colors which is not the expected behaviour
-- [ ] Column Layout
 
 #### 1 Apr 2025
 
@@ -37,6 +38,7 @@
 - [https://lexical.dev](https://lexical.dev)
 - [https://playground.lexical.dev](https://playground.lexical.dev)
 - [https://github.com/facebook/lexical](https://github.com/facebook/lexical)
-- [Lexical Crash Course by Usman Abdur Rehman](https://youtu.be/XI6nufqMSek?si=SCpzNxmjimAplmzy)
-- [Lexical Advanced Course by Usman Abdur Rehman](https://youtu.be/XI6nufqMSek?si=rMVeji1B38KNA2Fi)
-- [Lexical Override Nodes by Usman Abdur Rehman](https://youtu.be/LnEmBb6ABl8?si=T8zBK_-0P1w1H4PU)
+- [Lexical + React](https://www.youtube.com/watch?v=qIqxvk2qcmo&list=PLC50C2hBKlR9hpCSjdChcbbvOzMIxwuGj) by Lexical team
+- [Lexical Crash Course](https://youtu.be/XI6nufqMSek?si=SCpzNxmjimAplmzy) by Usman Abdur Rehman
+- [Lexical Advanced Course](https://youtu.be/XI6nufqMSek?si=rMVeji1B38KNA2Fi) by Usman Abdur Rehman
+- [Lexical Override Nodes](https://youtu.be/LnEmBb6ABl8?si=T8zBK_-0P1w1H4PU) by Usman Abdur Rehman

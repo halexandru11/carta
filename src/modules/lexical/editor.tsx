@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { CodeHighlightNode, CodeNode } from '@lexical/code';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
@@ -143,8 +142,6 @@ const editorConfig = {
   namespace: 'Carta',
   nodes: [
     AutoLinkNode,
-    CodeHighlightNode,
-    CodeNode,
     HeadingNode,
     HorizontalRuleNode,
     ImageNode,

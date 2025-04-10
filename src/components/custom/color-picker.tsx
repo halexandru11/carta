@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -37,8 +37,8 @@ export type ColorfulColor = (typeof ColorfulColor)[number];
 export type NonColorfulColor = (typeof NonColorfulColor)[number];
 export type Color = ColorfulColor | NonColorfulColor;
 
-export const DEFAULT_FONT_COLOR: NonColorfulColor = 'var(--text)'
-export const DEFAULT_FONT_BG_COLOR: NonColorfulColor = 'var(--crust)'
+export const DEFAULT_FONT_COLOR: NonColorfulColor = 'var(--text)';
+export const DEFAULT_FONT_BG_COLOR: NonColorfulColor = 'var(--crust)';
 
 type ColorPickerProps = {
   color?: Color;
@@ -51,19 +51,15 @@ export function ColorPicker({
   onColorChange,
   children,
 }: ColorPickerProps) {
+  const handleColorChange = useCallback((c: Color) => onColorChange?.(c), [onColorChange]);
+
   useEffect(() => {
     handleColorChange(propsColor);
-  }, [propsColor]);
-
-  function handleColorChange(c: Color) {
-    onColorChange?.(c);
-  }
+  }, [propsColor, handleColorChange]);
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        {children}
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent className='w-fit'>
         <div className='grid grid-cols-7 gap-1.5'>
           {ColorfulColor.map((c) => (

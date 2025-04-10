@@ -48,7 +48,7 @@ export function FontFamilyPlugin(props: FontFamilyPluginProps): JSX.Element {
       </SelectTrigger>
       <SelectContent>
         {FONT_FAMILY_OPTIONS.map(([option, text]) => (
-          <SelectItem key={option} value={option}>
+          <SelectItem key={option} value={option} style={{ fontFamily: option }}>
             {text}
           </SelectItem>
         ))}
