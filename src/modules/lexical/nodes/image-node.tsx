@@ -1,28 +1,29 @@
+import Image from 'next/image';
 import {
   DecoratorNode,
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
+  LexicalUpdateJSON,
   NodeKey,
+  SerializedLexicalNode,
+  Spread,
 } from 'lexical';
 
-export const $createImageNode = ({
-  altText,
-  height,
-  maxWidth = 400,
-  src,
-  width,
-}: {
+export type ImagePayload = {
   altText: string;
   height?: number;
+  key?: NodeKey;
   maxWidth?: number;
   src: string;
   width?: number;
-}) => {
-  return new ImageNode({ altText, height, maxWidth, src, width });
 };
 
-const convertImageElement = (domNode: Node): DOMConversionOutput | null => {
+export const $createImageNode = ({ maxWidth = 500, ...props }: ImagePayload) => {
+  return new ImageNode({ maxWidth, ...props });
+};
+
+const $convertImageElement = (domNode: Node): DOMConversionOutput | null => {
   if (domNode instanceof HTMLImageElement) {
     const { src, alt } = domNode;
     const node = $createImageNode({ src, altText: alt });
@@ -31,11 +32,22 @@ const convertImageElement = (domNode: Node): DOMConversionOutput | null => {
   return null;
 };
 
+export type SerializedImageNode = Spread<
+  {
+    altText: string;
+    height?: number;
+    maxWidth: number;
+    src: string;
+    width?: number;
+  },
+  SerializedLexicalNode
+>;
+
 export class ImageNode extends DecoratorNode<JSX.Element> {
   __src: string;
   __altText: string;
-  __height: 'inherit' | number;
-  __width: 'inherit' | number;
+  __height: number;
+  __width: number;
   __maxWidth: number;
 
   constructor({
@@ -49,14 +61,14 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     src: string;
     altText: string;
     maxWidth: number;
-    width?: 'inherit' | number;
-    height?: 'inherit' | number;
+    width?: number;
+    height?: number;
     key?: NodeKey;
   }) {
     super(key);
     this.__altText = altText;
-    this.__width = width || 'inherit';
-    this.__height = height || 'inherit';
+    this.__width = width ?? 100;
+    this.__height = height ?? 100;
     this.__maxWidth = maxWidth;
     this.__src = src;
   }
@@ -79,12 +91,12 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     /* eslint-disable @next/next/no-img-element*/
     return (
-      <img
+      <Image
         src={this.__src}
         alt={this.__altText}
+        width={this.__width}
+        height={this.__height}
         style={{
-          width: this.__width,
-          height: this.__height,
           maxWidth: this.__maxWidth,
         }}
       />
@@ -94,6 +106,10 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   createDOM(): HTMLElement {
     const span = document.createElement('span');
     return span;
+  }
+
+  updateDOM(): false {
+    return false;
   }
 
   exportDOM(): DOMExportOutput {
@@ -107,8 +123,34 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   static importDOM(): DOMConversionMap | null {
     return {
       img: () => {
-        return { conversion: convertImageElement, priority: 0 };
+        return { conversion: $convertImageElement, priority: 0 };
       },
+    };
+  }
+
+  static importJSON(serializedNode: SerializedImageNode): ImageNode {
+    const { altText, height, width, maxWidth, src } = serializedNode;
+    return $createImageNode({
+      altText,
+      height,
+      maxWidth,
+      src,
+      width,
+    }).updateFromJSON(serializedNode);
+  }
+
+  updateFromJSON(serializedNode: LexicalUpdateJSON<SerializedImageNode>): this {
+    return super.updateFromJSON(serializedNode);
+  }
+
+  exportJSON(): SerializedImageNode {
+    return {
+      ...super.exportJSON(),
+      altText: this.__altText,
+      height: this.__height,
+      maxWidth: this.__maxWidth,
+      src: this.__src,
+      width: this.__width,
     };
   }
 }

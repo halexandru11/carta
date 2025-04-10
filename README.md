@@ -2,13 +2,16 @@
 
 ## Roadmap
 
-- [ ] Integrate AI to help write templates and documents
 - [ ] Save/Download
 - [ ] Column Layout
 - [ ] Table cells resize
 - [ ] Image resize
 - [ ] Variables: used in templates to help creating customized documents
 - [ ] Add a database to store contact & companies to generate documents from templates. Also save the templates and documents in the database
+
+#### 15 Apr 2025
+
+- [ ] Integrate AI to help write templates and documents
 
 #### 8 Apr 2025
 
