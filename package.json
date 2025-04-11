@@ -20,7 +20,10 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.10",
+    "@ai-sdk/openai": "^1.3.9",
     "@hookform/resolvers": "^4.1.3",
+    "@lexical/html": "^0.29.0",
     "@lexical/link": "^0.29.0",
     "@lexical/list": "^0.29.0",
     "@lexical/react": "^0.29.0",

@@ -38,6 +38,7 @@ import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
+import { LlmPlugin } from './plugins/llm-plugin';
 
 const placeholder = 'Enter some rich text...';
 
@@ -176,6 +177,7 @@ function EditorHelper() {
 
   return (
     <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
+      <LlmPlugin />
       <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
       <div className='relative'>
         <RichTextPlugin

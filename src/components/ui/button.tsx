@@ -48,6 +48,7 @@ const buttonVariants = cva(
         'icon-sm': 'h-8 w-8',
         icon: 'h-9 w-9',
         link: 'gap-1.5 rounded-none p-0',
+        rounded: 'w-10 h-10 rounded-full'
       },
     },
     defaultVariants: {
