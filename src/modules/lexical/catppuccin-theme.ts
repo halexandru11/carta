@@ -3,7 +3,7 @@ import { EditorThemeClasses } from 'lexical';
 export const catppuccinTheme: EditorThemeClasses = {
   ltr: 'text-left',
   rtl: 'text-right',
-  paragraph: `relative`,
+  paragraph: `relative pb-2`,
   quote: 'bg-muted p-2 rounded-e-sm border-s-4 border-muted-foreground',
   heading: {
     h1: 'text-3xl font-extrabold',

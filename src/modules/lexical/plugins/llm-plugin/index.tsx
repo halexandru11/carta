@@ -7,7 +7,14 @@ import { Button } from '~/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '~/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { Textarea } from '~/components/ui/textarea';
-import { $getRoot, $insertNodes, createCommand, LexicalCommand } from 'lexical';
+import {
+  $getRoot,
+  $getSelection,
+  $insertNodes,
+  $isRangeSelection,
+  createCommand,
+  LexicalCommand,
+} from 'lexical';
 import { SendIcon, SparklesIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -50,11 +57,16 @@ export function LlmPlugin() {
       // Once you have the DOM instance it's easy to generate LexicalNodes.
       const nodes = $generateNodesFromDOM(editor, dom);
 
-      // Select the root
-      $getRoot().select();
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        selection.insertNodes(nodes);
+      } else {
+        // Select the root
+        $getRoot().select();
 
-      // Insert them at a selection.
-      $insertNodes(nodes);
+        // Insert them at a selection.
+        $insertNodes(nodes);
+      }
     });
 
     console.info('AI has finished');

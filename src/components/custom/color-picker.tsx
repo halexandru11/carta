@@ -32,13 +32,14 @@ const NonColorfulColor = [
   'var(--base)',
   'var(--mantle)',
   'var(--crust)',
+  'var(--card)',
 ] as const;
 export type ColorfulColor = (typeof ColorfulColor)[number];
 export type NonColorfulColor = (typeof NonColorfulColor)[number];
 export type Color = ColorfulColor | NonColorfulColor;
 
 export const DEFAULT_FONT_COLOR: NonColorfulColor = 'var(--text)';
-export const DEFAULT_FONT_BG_COLOR: NonColorfulColor = 'var(--crust)';
+export const DEFAULT_FONT_BG_COLOR: NonColorfulColor = 'var(--card)';
 
 type ColorPickerProps = {
   color?: Color;
