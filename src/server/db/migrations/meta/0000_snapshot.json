@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "2169610c-47e4-4894-af9b-e10f2382e831",
+  "id": "ff48d628-4fe6-4955-b31a-61614dea6e17",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "carta_documents": {
@@ -23,7 +23,7 @@
         },
         "content": {
           "name": "content",
-          "type": "blob",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

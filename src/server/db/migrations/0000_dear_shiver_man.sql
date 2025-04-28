@@ -1,7 +1,7 @@
 CREATE TABLE `carta_documents` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`title` text(64),
-	`content` blob,
+	`content` text,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL
 );

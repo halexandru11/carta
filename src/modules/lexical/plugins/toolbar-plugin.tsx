@@ -1,7 +1,6 @@
 'use client';
 
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react';
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   $isListNode,
   INSERT_CHECK_LIST_COMMAND,
@@ -47,17 +46,15 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
-  COMMAND_PRIORITY_NORMAL,
   FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
-  KEY_MODIFIER_COMMAND,
   LexicalEditor,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
 } from 'lexical';
 import {
-    ALargeSmallIcon,
+  ALargeSmallIcon,
   AlignCenterIcon,
   AlignJustifyIcon,
   AlignLeftIcon,
@@ -86,7 +83,6 @@ import {
 import { z } from 'zod';
 
 import { getSelectedNode } from '../utils/get-selected-node';
-import { sanitizeUrl } from '../utils/url';
 import { DEFAULT_FONT_FAMILY, FontFamily, FontFamilyPlugin } from './font-family-plugin';
 import { DEFAULT_FONT_SIZE, FontSizePlugin } from './font-size-plugin';
 import { ImagePlugin } from './image-plugin';
@@ -127,13 +123,7 @@ const blockTypeTo: Record<BlockType, [string, LucideIcon]> = {
 const RootType = z.enum(['root', 'table']);
 type RootType = z.infer<typeof RootType>;
 
-type ToolbarPluginProps = {
-  setIsLinkEditMode: Dispatch<boolean>;
-};
-
-export function ToolbarPlugin(props: ToolbarPluginProps) {
-  const { setIsLinkEditMode } = props;
-
+export function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
   const [canUndo, setCanUndo] = useState(false);
@@ -148,7 +138,6 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
-  const [isLink, setIsLink] = useState(false);
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
 
   const $updateToolbar = useCallback(() => {
@@ -175,15 +164,7 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
       setIsUnderline(selection.hasFormat('underline'));
       setIsStrikethrough(selection.hasFormat('strikethrough'));
 
-      // Update links
       const node = getSelectedNode(selection);
-      const parent = node.getParent();
-      if ($isLinkNode(parent) || $isLinkNode(node)) {
-        setIsLink(true);
-      } else {
-        setIsLink(false);
-      }
-
       const tableNode = $findMatchingParent(node, $isTableNode);
       if ($isTableNode(tableNode)) {
         setRootType(RootType.enum.table);
@@ -303,31 +284,6 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
     );
   }, [editor, $updateToolbar]);
 
-  useEffect(() => {
-    return editor.registerCommand(
-      KEY_MODIFIER_COMMAND,
-      (payload) => {
-        const event: KeyboardEvent = payload;
-        const { code, ctrlKey, metaKey } = event;
-
-        if (code === 'KeyK' && (ctrlKey || metaKey)) {
-          event.preventDefault();
-          let url: string | null;
-          if (!isLink) {
-            setIsLinkEditMode(true);
-            url = sanitizeUrl('https://');
-          } else {
-            setIsLinkEditMode(false);
-            url = null;
-          }
-          return editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
-        }
-        return false;
-      },
-      COMMAND_PRIORITY_NORMAL,
-    );
-  }, [editor, isLink, setIsLinkEditMode]);
-
   const applyStyleText = useCallback(
     (styles: Record<string, string>, skipHistoryStack?: boolean) => {
       editor.update(
@@ -356,16 +312,6 @@ export function ToolbarPlugin(props: ToolbarPluginProps) {
     },
     [applyStyleText],
   );
-
-  // const insertLink = useCallback(() => {
-  //   if (!isLink) {
-  //     setIsLinkEditMode(true);
-  //     editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
-  //   } else {
-  //     setIsLinkEditMode(false);
-  //     editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-  //   }
-  // }, [editor, isLink, setIsLinkEditMode]);
 
   return (
     <div className='mb-2 flex items-center overflow-x-auto rounded-md bg-card p-1' ref={toolbarRef}>

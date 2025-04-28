@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
-import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
@@ -17,7 +16,6 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
-import { useLexicalEditable } from '@lexical/react/useLexicalEditable';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import {
@@ -36,9 +34,10 @@ import {
 import { catppuccinTheme } from './catppuccin-theme';
 import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
+import { LlmPlugin } from './plugins/llm-plugin';
+import { SavePlugin } from './plugins/save-plugin';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
-import { LlmPlugin } from './plugins/llm-plugin';
 
 const placeholder = 'Enter some rich text...';
 
@@ -162,52 +161,62 @@ const editorConfig = {
   theme: catppuccinTheme,
 };
 
-export function Editor() {
-  return (
-    <LexicalComposer initialConfig={editorConfig}>
-      <EditorHelper />
-    </LexicalComposer>
+type EditorProps = {
+  defaultValue?: string;
+  onSave?: (htmlString: string) => Promise<void>;
+};
+
+export function Editor(props: EditorProps) {
+  const initialConfig = useMemo(
+    () => ({
+      ...editorConfig,
+    }),
+    [],
   );
-}
-
-function EditorHelper() {
-  const isEditable = useLexicalEditable();
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const [_isLinkEditMode, setIsLinkEditMode] = useState(false);
 
   return (
-    <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
-      <LlmPlugin />
-      <ToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
-      <div className='relative'>
-        <RichTextPlugin
-          contentEditable={
-            <ContentEditable
-              className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
-              aria-placeholder={placeholder}
-              placeholder={
-                <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
-                  {placeholder}
-                </div>
+    <LexicalComposer initialConfig={initialConfig}>
+      <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
+        <LlmPlugin />
+        <div className='mb-2 justify-end flex'>
+          <SavePlugin
+            onSave={async (htmlString) => {
+              if (props.onSave) {
+                await props.onSave(htmlString);
               }
-            />
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <AutoFocusPlugin />
-        <ClearEditorPlugin />
-        <ListPlugin />
-        <CheckListPlugin />
-        <TablePlugin hasCellMerge hasCellBackgroundColor />
-        <ClickableLinkPlugin disabled={isEditable} />
-        <HorizontalRulePlugin />
-        <TabIndentationPlugin />
+            }}
+          />
+        </div>
+        <ToolbarPlugin />
+        <div className='relative'>
+          <RichTextPlugin
+            contentEditable={
+              <ContentEditable
+                className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
+                aria-placeholder={placeholder}
+                placeholder={
+                  <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
+                    {placeholder}
+                  </div>
+                }
+              />
+            }
+            ErrorBoundary={LexicalErrorBoundary}
+          />
+          <AutoFocusPlugin />
+          <ClearEditorPlugin />
+          <ListPlugin />
+          <CheckListPlugin />
+          <TablePlugin hasCellMerge hasCellBackgroundColor />
+          <HorizontalRulePlugin />
+          <TabIndentationPlugin />
 
-        <AutoFocusPlugin />
-        <CheckListPlugin />
-        <ListPlugin />
-        <HistoryPlugin />
+          <AutoFocusPlugin />
+          <CheckListPlugin />
+          <ListPlugin />
+          <HistoryPlugin />
+        </div>
       </div>
-    </div>
+    </LexicalComposer>
   );
 }
