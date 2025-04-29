@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
@@ -18,6 +17,7 @@ import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
+import { DocumentUpdate } from '~/schemas/documents';
 import {
   $isTextNode,
   DOMConversionMap,
@@ -35,6 +35,7 @@ import { catppuccinTheme } from './catppuccin-theme';
 import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
 import { LlmPlugin } from './plugins/llm-plugin';
+import { LoadDefaultContentPlugin } from './plugins/load-default-content-plugin';
 import { SavePlugin } from './plugins/save-plugin';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
@@ -162,27 +163,22 @@ const editorConfig = {
 };
 
 type EditorProps = {
-  defaultValue?: string;
-  onSave?: (htmlString: string) => Promise<void>;
+  title?: string;
+  defaultContent?: string;
+  onSave?: (doc: Omit<DocumentUpdate, 'id'>) => Promise<void>;
 };
 
 export function Editor(props: EditorProps) {
-  const initialConfig = useMemo(
-    () => ({
-      ...editorConfig,
-    }),
-    [],
-  );
-
   return (
-    <LexicalComposer initialConfig={initialConfig}>
+    <LexicalComposer initialConfig={editorConfig}>
       <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
         <LlmPlugin />
-        <div className='mb-2 justify-end flex'>
+        <div className='mb-2 flex items-center justify-between'>
+          <h2 className='text-lg font-medium'>{props.title}</h2>
           <SavePlugin
             onSave={async (htmlString) => {
               if (props.onSave) {
-                await props.onSave(htmlString);
+                await props.onSave({ content: htmlString });
               }
             }}
           />
@@ -204,17 +200,14 @@ export function Editor(props: EditorProps) {
             ErrorBoundary={LexicalErrorBoundary}
           />
           <AutoFocusPlugin />
+          <CheckListPlugin />
           <ClearEditorPlugin />
           <ListPlugin />
-          <CheckListPlugin />
-          <TablePlugin hasCellMerge hasCellBackgroundColor />
-          <HorizontalRulePlugin />
-          <TabIndentationPlugin />
-
-          <AutoFocusPlugin />
-          <CheckListPlugin />
-          <ListPlugin />
           <HistoryPlugin />
+          <HorizontalRulePlugin />
+          <LoadDefaultContentPlugin defaultContent={props.defaultContent} />
+          <TablePlugin hasCellMerge hasCellBackgroundColor />
+          <TabIndentationPlugin />
         </div>
       </div>
     </LexicalComposer>

@@ -4,7 +4,7 @@ import { DocumentView } from '~/modules/documents/document-view';
 
 type DocumentPageProps = {
   params: Promise<{
-    documentId: number;
+    documentId: string;
   }>;
 };
 

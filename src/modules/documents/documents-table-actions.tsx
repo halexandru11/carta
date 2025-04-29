@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { documentDelete } from '~/server/actions/documents';
+import { documentClone, documentDelete } from '~/server/actions/documents';
 import { CopyIcon, EditIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -17,7 +17,7 @@ type DocumentsTableActionsProps = {
 
 export function DocumentsTableActions(props: DocumentsTableActionsProps) {
   async function handleDelete() {
-    const confimed = confirm('Are you sure that you want to DELETE this documents?');
+    const confimed = confirm('Are you sure that you want to DELETE this document?');
     if (!confimed) {
       return;
     }
@@ -26,6 +26,19 @@ export function DocumentsTableActions(props: DocumentsTableActionsProps) {
       loading: 'Deleting...',
       success: 'Document deleted successfully',
       error: 'Could not delete',
+    });
+  }
+
+  async function handleClone() {
+    const confimed = confirm('Are you sure that you want to CLONE this document?');
+    if (!confimed) {
+      return;
+    }
+
+    toast.promise(documentClone(props.documentId), {
+      loading: 'Cloning...',
+      success: 'Document cloned successfully',
+      error: 'Could not clone document',
     });
   }
 
@@ -41,9 +54,9 @@ export function DocumentsTableActions(props: DocumentsTableActionsProps) {
             Edit Document
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleClone}>
           <CopyIcon />
-          Copy Document
+          Clone Document
         </DropdownMenuItem>
         <DropdownMenuItem className='focus:text-destructive' onSelect={handleDelete}>
           <TrashIcon />

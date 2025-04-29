@@ -1,7 +1,7 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { InferSelectModel, sql } from 'drizzle-orm';
+import { InferSelectModel } from 'drizzle-orm';
 import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core';
 
 /**
@@ -18,12 +18,10 @@ export const documents = createTable(
     id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
     title: text('title', { length: 64 }),
     content: text('content'),
-    createdAt: int('created_at', { mode: 'timestamp' })
-      .default(sql`(unixepoch())`)
-        .notNull(),
+    createdAt: int('created_at', { mode: 'timestamp' }).default(new Date()).notNull(),
     updatedAt: int('updated_at', { mode: 'timestamp' })
-      .default(sql`(unixepoch())`)
-      .$onUpdate(() => sql`(unixepoch())`)
+      .default(new Date())
+      .$onUpdate(() => new Date())
       .notNull(),
   },
   (document) => ({

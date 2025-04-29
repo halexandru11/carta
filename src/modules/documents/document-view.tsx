@@ -1,31 +1,46 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Editor } from '~/modules/lexical/editor';
-import { documentUpdate } from '~/server/actions/documents';
-import { toast } from 'sonner';
+import { DocumentUpdate } from '~/schemas/documents';
+import { documentGet, documentUpdate } from '~/server/actions/documents';
 
 type DocumentViewProps = {
-  documentId: number;
+  documentId: string;
 };
 
 export function DocumentView(props: DocumentViewProps) {
-  async function handleSave(htmlString: string) {
-    toast.promise(
-      documentUpdate({
-        id: props.documentId,
-        content: htmlString,
-      }),
-      {
-        loading: 'Saving...',
-        success: 'Document saved successfully',
-        error: 'Could not save the document',
-      },
-    );
+  const documentId = Number(props.documentId);
+
+  const [doc, setDoc] = useState<Awaited<ReturnType<typeof documentGet>>>();
+  const [firstRender, setFirstRender] = useState(true);
+
+  useEffect(() => {
+    async function fetchContent() {
+      const docRes = await documentGet(documentId);
+      if (docRes?.content && firstRender) {
+        setFirstRender(false);
+        setDoc(docRes);
+      }
+    }
+
+    fetchContent();
+  });
+
+  async function handleSave(newDoc: Omit<DocumentUpdate, 'id'>) {
+    await documentUpdate({
+      ...newDoc,
+      id: documentId,
+    });
   }
 
   return (
     <div className='mx-auto w-[700px]'>
-      <Editor onSave={handleSave} />
+      <Editor
+        title={doc?.title ?? undefined}
+        defaultContent={doc?.content ?? undefined}
+        onSave={handleSave}
+      />
     </div>
   );
 }

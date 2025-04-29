@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '~/components/ui/button';
 import {
@@ -30,6 +32,8 @@ type CreateDocumentDialogProps = {
 };
 
 export function CreateDocumentDialog(props: CreateDocumentDialogProps) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
   const form = useForm<DocumentCreate>({
     resolver: zodResolver(documentCreateSchema),
     defaultValues: {
@@ -38,8 +42,16 @@ export function CreateDocumentDialog(props: CreateDocumentDialogProps) {
     },
   });
 
+  async function handleDocumentCreate(values: DocumentCreate) {
+    const docId = await documentCreate(values);
+    if (docId !== undefined) {
+      router.push(`/documents/${docId}`);
+    }
+    setOpen(false);
+  }
+
   async function handleSubmit(values: DocumentCreate) {
-    toast.promise(documentCreate(values), {
+    toast.promise(handleDocumentCreate(values), {
       loading: 'Creating document...',
       success: 'Document created successfully',
       error: 'Could not create document',
@@ -47,7 +59,7 @@ export function CreateDocumentDialog(props: CreateDocumentDialogProps) {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>

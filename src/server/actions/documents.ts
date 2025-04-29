@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import {
   DocumentCreate,
   documentCreateSchema,
@@ -12,23 +13,40 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '../db';
 import { documents } from '../db/schema';
-import { revalidatePath } from 'next/cache';
 
 export async function documentsGetAll() {
   return await db.select().from(documents);
 }
 
-export async function documentsGet(id: number) {
-  return await db.select().from(documents).where(eq(documents.id, id));
+export async function documentGet(id: number) {
+  return (await db.select().from(documents).where(eq(documents.id, id)).limit(1))[0];
 }
 
 export async function documentCreate(payload: DocumentCreate) {
   const { success, data } = documentCreateSchema.safeParse(payload);
 
   if (success) {
-    await db.insert(documents).values(data);
+    const createdDoc = await db.insert(documents).values(data).returning({ id: documents.id });
     revalidatePath('/documents');
     revalidatePath('/documents/[documentId]', 'page');
+    return createdDoc[0]?.id;
+  }
+}
+
+export async function documentClone(originalDocId: number) {
+  const originalDoc = await documentGet(originalDocId);
+  if (originalDoc) {
+    const createdDoc = await db
+      .insert(documents)
+      .values({
+        title: originalDoc.title + ' (clone)',
+        content: originalDoc.content,
+      })
+      .returning({ id: documents.id });
+
+    revalidatePath('/documents');
+    revalidatePath('/documents/[documentId]', 'page');
+    return createdDoc[0]?.id;
   }
 }
 
@@ -38,7 +56,6 @@ export async function documentUpdate(payload: DocumentUpdate) {
   if (success) {
     await db.update(documents).set(payload).where(eq(documents.id, data.id));
     revalidatePath('/documents');
-    revalidatePath('/documents/[documentId]', 'page');
   }
 }
 
