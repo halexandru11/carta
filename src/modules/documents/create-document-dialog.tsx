@@ -51,7 +51,7 @@ export function CreateDocumentDialog(props: CreateDocumentDialogProps) {
   }
 
   async function handleSubmit(values: DocumentCreate) {
-    toast.promise(handleDocumentCreate(values), {
+    toast.promise(async () => await handleDocumentCreate(values), {
       loading: 'Creating document...',
       success: 'Document created successfully',
       error: 'Could not create document',

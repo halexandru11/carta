@@ -35,7 +35,7 @@ export function DocumentView(props: DocumentViewProps) {
   }
 
   return (
-    <div className='mx-auto w-[700px]'>
+    <div className='mx-auto w-[900px]'>
       <Editor
         title={doc?.title ?? undefined}
         defaultContent={doc?.content ?? undefined}

@@ -47,7 +47,7 @@ export function DocumentsTableActions(props: DocumentsTableActionsProps) {
       <DropdownMenuTrigger>
         <MoreHorizontalIcon />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align='start' className='bg-base'>
         <DropdownMenuItem asChild>
           <Link href={`/documents/${props.documentId}`}>
             <EditIcon />

@@ -1,20 +1,49 @@
 import * as React from 'react';
 import { cn } from '~/lib/utils';
 
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
-  ({ className, ...props }, ref) => (
-    <div className='relative w-full overflow-auto'>
-      <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
-    </div>
-  ),
-);
+const Table = React.forwardRef<
+  HTMLTableElement,
+  React.HTMLAttributes<HTMLTableElement> & {
+    classNameWrapper?: string;
+  }
+>(({ classNameWrapper, className, ...props }, ref) => (
+  <div className={cn('relative w-full overflow-auto rounded-md', classNameWrapper)}>
+    <table
+      ref={ref}
+      className={cn('w-full caption-bottom border-collapse bg-card text-sm', className)}
+      {...props}
+    />
+  </div>
+));
 Table.displayName = 'Table';
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn('[&_tr]:border-b', className)} {...props} />
+  React.HTMLAttributes<HTMLTableSectionElement> & {
+    /**
+     * Show only the last header row when scrolling a long table
+     */
+    collapsibleRows?: boolean;
+  }
+>(({ className, children, collapsibleRows, ...props }, ref) => (
+  <thead
+    ref={ref}
+    className={cn(
+      'font-semibold [&_tr]:border-0 [&_tr_th]:sticky',
+      '[&_tr:nth-child(1)_th]:top-0',
+      '[&_tr:nth-child(2)_th]:top-10',
+      '[&_tr:nth-child(3)_th]:top-20',
+      '[&_tr:nth-child(4)_th]:top-30',
+      '[&_tr:nth-child(5)_th]:top-40',
+      className,
+    )}
+    {...props}
+  >
+    {children}
+    <TableRow>
+      <TableHead colSpan={100} className='h-px p-0 bg-border' />
+    </TableRow>
+  </thead>
 ));
 TableHeader.displayName = 'TableHeader';
 
@@ -29,12 +58,13 @@ TableBody.displayName = 'TableBody';
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tfoot
-    ref={ref}
-    className={cn('bg-muted/50 border-t font-medium [&>tr]:last:border-b-0', className)}
-    {...props}
-  />
+>(({ className, children, ...props }, ref) => (
+  <tfoot ref={ref} className={cn('font-medium', className)} {...props}>
+    <TableRow>
+      <TableCell colSpan={100} className='h-0.5 bg-border p-0' />
+    </TableRow>
+    {children}
+  </tfoot>
 ));
 TableFooter.displayName = 'TableFooter';
 
@@ -43,7 +73,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        'hover:bg-muted/50 border-b transition-colors data-[state=selected]:bg-muted',
+        'border-b transition-colors hover:bg-accent data-[state=selected]:bg-accent',
         className,
       )}
       {...props}
@@ -59,7 +89,9 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+      'z-10 h-10 bg-card px-2 text-left align-middle font-medium text-muted-foreground',
+      'shadow-[1px_0px_0px_1px_var(--border)]',
+      '[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
       className,
     )}
     {...props}
