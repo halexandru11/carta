@@ -554,7 +554,7 @@ function BlockFormatSelect({
 
   return (
     <Select disabled={disabled} value={blockType} onValueChange={handleFormatChange}>
-      <SelectTrigger className='h-8 w-fit gap-1 border-none px-2 hover:bg-accent hover:text-accent-foreground'>
+      <SelectTrigger className='h-8 w-40 gap-1 border-none px-2 hover:bg-accent hover:text-accent-foreground'>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

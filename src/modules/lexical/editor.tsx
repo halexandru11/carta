@@ -34,8 +34,10 @@ import {
 import { catppuccinTheme } from './catppuccin-theme';
 import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
+import { PlaceholderNode } from './nodes/placeholder-node';
 import { LlmPlugin } from './plugins/llm-plugin';
 import { LoadDefaultContentPlugin } from './plugins/load-default-content-plugin';
+import { PlaceholderPlugin } from './plugins/placeholder-plugin';
 import { SavePlugin } from './plugins/save-plugin';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
@@ -150,6 +152,7 @@ const editorConfig = {
     ListItemNode,
     ListNode,
     PageBreakNode,
+    PlaceholderNode,
     QuoteNode,
     TableCellNode,
     TableNode,
@@ -173,41 +176,46 @@ export function Editor(props: EditorProps) {
     <LexicalComposer initialConfig={editorConfig}>
       <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
         <LlmPlugin />
-        <div className='mb-2 flex items-center justify-between'>
-          <h2 className='text-lg font-medium'>{props.title}</h2>
-          <SavePlugin
-            onSave={async (htmlString) => {
-              if (props.onSave) {
-                await props.onSave({ content: htmlString });
-              }
-            }}
-          />
-        </div>
-        <ToolbarPlugin />
-        <div className='relative'>
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable
-                className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
-                aria-placeholder={placeholder}
-                placeholder={
-                  <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
-                    {placeholder}
-                  </div>
-                }
+        <div className='grid grid-cols-[14rem,minmax(0,1fr)] gap-x-2'>
+          <PlaceholderPlugin />
+          <div>
+            <div className='mb-2 flex items-center justify-between'>
+              <h2 className='text-lg font-medium'>{props.title}</h2>
+              <SavePlugin
+                onSave={async (htmlString) => {
+                  if (props.onSave) {
+                    await props.onSave({ content: htmlString });
+                  }
+                }}
               />
-            }
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <AutoFocusPlugin />
-          <CheckListPlugin />
-          <ClearEditorPlugin />
-          <ListPlugin />
-          <HistoryPlugin />
-          <HorizontalRulePlugin />
-          <LoadDefaultContentPlugin defaultContent={props.defaultContent} />
-          <TablePlugin hasCellMerge hasCellBackgroundColor />
-          <TabIndentationPlugin />
+            </div>
+            <ToolbarPlugin />
+            <div className='relative'>
+              <RichTextPlugin
+                contentEditable={
+                  <ContentEditable
+                    className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
+                    aria-placeholder={placeholder}
+                    placeholder={
+                      <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
+                        {placeholder}
+                      </div>
+                    }
+                  />
+                }
+                ErrorBoundary={LexicalErrorBoundary}
+              />
+              <AutoFocusPlugin />
+              <CheckListPlugin />
+              <ClearEditorPlugin />
+              <ListPlugin />
+              <HistoryPlugin />
+              <HorizontalRulePlugin />
+              <LoadDefaultContentPlugin defaultContent={props.defaultContent} />
+              <TablePlugin hasCellMerge hasCellBackgroundColor />
+              <TabIndentationPlugin />
+            </div>
+          </div>
         </div>
       </div>
     </LexicalComposer>

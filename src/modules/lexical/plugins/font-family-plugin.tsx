@@ -43,7 +43,7 @@ export function FontFamilyPlugin(props: FontFamilyPluginProps): JSX.Element {
 
   return (
     <Select disabled={props.disabled} value={props.fontFamily} onValueChange={handleClick}>
-      <SelectTrigger className='h-8 w-fit gap-1 border-none px-2 hover:bg-accent hover:text-accent-foreground'>
+      <SelectTrigger className='h-8 w-28 gap-1 border-none px-2 hover:bg-accent hover:text-accent-foreground'>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
