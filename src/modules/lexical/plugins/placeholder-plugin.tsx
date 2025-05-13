@@ -35,7 +35,6 @@ export function PlaceholderPlugin() {
           if (!after) {
             return;
           }
-
           const [head] = after.splitText(fullMatch.length);
           if (!head) {
             return;
@@ -79,10 +78,10 @@ export function PlaceholderPlugin() {
     <div className='mt-10 rounded-md border bg-card p-3'>
       <h4 className='mb-2 font-bold'>Placeholder Values</h4>
       {Object.entries(placeholders).map(([id, value]) => (
-        <form key={id} className='mb-2' onSubmit={(e) => e.preventDefault()}>
+        <div key={id} className='mb-2' onSubmit={(e) => e.preventDefault()}>
           <Label className='capitalize'>{id.replaceAll('-', ' ')}</Label>
           <Input value={value} onChange={(e) => updateValue(id, e.target.value)} />
-        </form>
+        </div>
       ))}
     </div>
   );
