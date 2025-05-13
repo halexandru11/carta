@@ -11,7 +11,7 @@ export function PlaceholderPlugin() {
   const [placeholders, setPlaceholders] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    return editor.registerTextContentListener(() => {
+    const releaseTextContentListener = editor.registerTextContentListener(() => {
       editor.update(() => {
         const selection = $getSelection();
         if (!$isRangeSelection(selection) || !selection.isCollapsed()) return;
@@ -44,10 +44,8 @@ export function PlaceholderPlugin() {
         }
       });
     });
-  }, [editor]);
 
-  useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
+    const releaseUpdateListener = editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
         const allPlaceholders: Record<string, string> = {};
         const nodes = editor.getEditorState()._nodeMap;
@@ -59,6 +57,11 @@ export function PlaceholderPlugin() {
         setPlaceholders(allPlaceholders);
       });
     });
+
+    return () => {
+      releaseTextContentListener();
+      releaseUpdateListener();
+    };
   }, [editor]);
 
   const updateValue = (id: string, newValue: string) => {
@@ -77,7 +80,7 @@ export function PlaceholderPlugin() {
       <h4 className='mb-2 font-bold'>Placeholder Values</h4>
       {Object.entries(placeholders).map(([id, value]) => (
         <form key={id} className='mb-2' onSubmit={(e) => e.preventDefault()}>
-          <Label className='capitalize'>{id}</Label>
+          <Label className='capitalize'>{id.replaceAll('-', ' ')}</Label>
           <Input value={value} onChange={(e) => updateValue(id, e.target.value)} />
         </form>
       ))}

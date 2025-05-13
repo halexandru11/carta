@@ -1,4 +1,9 @@
-import { DecoratorNode, LexicalNode, NodeKey } from 'lexical';
+import {
+  DecoratorNode,
+  DOMConversionMap,
+  LexicalNode,
+  NodeKey,
+} from 'lexical';
 
 type SerializedPlaceholderNode = {
   id: string;
@@ -40,6 +45,39 @@ export class PlaceholderNode extends DecoratorNode<JSX.Element> {
 
   decorate(): JSX.Element {
     return <span>{this.__value}</span>;
+  }
+
+  exportDOM(): { element: HTMLElement } {
+    const span = document.createElement('span');
+    span.setAttribute('data-placeholder-id', this.__id);
+    span.setAttribute('data-placeholder-value', this.__value);
+    span.setAttribute('contenteditable', 'false');
+    span.style.background = '#eef';
+    span.style.padding = '0 4px';
+    span.style.borderRadius = '4px';
+    span.textContent = this.__value;
+    return { element: span };
+  }
+
+  static importDOM(): DOMConversionMap | null {
+    return {
+      span: (domNode: Node) => {
+        const element = domNode as HTMLElement;
+        const id = element.getAttribute('data-placeholder-id');
+        const value = element.getAttribute('data-placeholder-value');
+
+        if (id && value) {
+          return {
+            conversion: () => ({
+              node: new PlaceholderNode(id, value),
+            }),
+            priority: 2,
+          };
+        }
+
+        return null;
+      },
+    };
   }
 
   exportJSON(): SerializedPlaceholderNode {
