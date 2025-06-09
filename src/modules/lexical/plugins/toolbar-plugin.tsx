@@ -376,17 +376,6 @@ export function ToolbarPlugin() {
       >
         <StrikethroughIcon className='size-4' />
       </Button>
-      {/*
-        <Button
-          size='icon-sm'
-          variant={isLink ? 'secondary' : 'ghost-secondary'}
-          disabled={!isEditable}
-          onClick={insertLink}
-          aria-label='Insert Link'
-        >
-          <LinkIcon className='size-4' />
-        </Button>
-      */}
       <ColorPicker color={fontColor} onColorChange={onFontColorSelect}>
         <Button
           size='icon-sm'

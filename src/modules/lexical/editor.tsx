@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
@@ -35,12 +36,14 @@ import { catppuccinTheme } from './catppuccin-theme';
 import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
 import { PlaceholderNode } from './nodes/placeholder-node';
+import ContextMenuPlugin from './plugins/context-menu';
 import { LlmPlugin } from './plugins/llm-plugin';
 import { LoadDefaultContentPlugin } from './plugins/load-default-content-plugin';
 import { PlaceholderPlugin } from './plugins/placeholder-plugin';
 import { SavePlugin } from './plugins/save-plugin';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
+import FloatingTextFormatToolbarPlugin from './plugins/floating-text-format-toolbar-plugin';
 
 const placeholder = 'Enter some rich text...';
 
@@ -172,6 +175,14 @@ type EditorProps = {
 };
 
 export function Editor(props: EditorProps) {
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
+
+  const onRef = (_floatingAnchorElem: HTMLDivElement) => {
+    if (_floatingAnchorElem !== null) {
+      setFloatingAnchorElem(_floatingAnchorElem);
+    }
+  };
+
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
@@ -193,27 +204,33 @@ export function Editor(props: EditorProps) {
             <div className='relative'>
               <RichTextPlugin
                 contentEditable={
-                  <ContentEditable
-                    className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
-                    aria-placeholder={placeholder}
-                    placeholder={
-                      <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
-                        {placeholder}
-                      </div>
-                    }
-                  />
+                  <div ref={onRef}>
+                    <ContentEditable
+                      className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
+                      aria-placeholder={placeholder}
+                      placeholder={
+                        <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
+                          {placeholder}
+                        </div>
+                      }
+                    />
+                  </div>
                 }
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <AutoFocusPlugin />
               <CheckListPlugin />
               <ClearEditorPlugin />
+              <ContextMenuPlugin />
               <ListPlugin />
               <HistoryPlugin />
               <HorizontalRulePlugin />
               <LoadDefaultContentPlugin defaultContent={props.defaultContent} />
               <TablePlugin hasCellMerge hasCellBackgroundColor />
               <TabIndentationPlugin />
+              {floatingAnchorElem && (
+                <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+              )}
             </div>
           </div>
         </div>
