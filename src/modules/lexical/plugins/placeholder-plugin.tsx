@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
@@ -6,7 +6,7 @@ import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
 
 import { $createPlaceholderNode, PlaceholderNode } from '../nodes/placeholder-node';
 
-export function PlaceholderPlugin() {
+export const PlaceholderPlugin = memo(() => {
   const [editor] = useLexicalComposerContext();
   const [placeholders, setPlaceholders] = useState<Record<string, string>>({});
 
@@ -63,16 +63,19 @@ export function PlaceholderPlugin() {
     };
   }, [editor]);
 
-  const updateValue = (id: string, newValue: string) => {
-    editor.update(() => {
-      const nodes = editor.getEditorState()._nodeMap;
-      nodes.forEach((node) => {
-        if (node instanceof PlaceholderNode && node.getId() === id) {
-          node.setValue(newValue);
-        }
+  const updateValue = useCallback(
+    (id: string, newValue: string) => {
+      editor.update(() => {
+        const nodes = editor.getEditorState()._nodeMap;
+        nodes.forEach((node) => {
+          if (node instanceof PlaceholderNode && node.getId() === id) {
+            node.setValue(newValue);
+          }
+        });
       });
-    });
-  };
+    },
+    [editor],
+  );
 
   return (
     <div className='mt-10 rounded-md border bg-card p-3'>
@@ -80,9 +83,9 @@ export function PlaceholderPlugin() {
       {Object.entries(placeholders).map(([id, value]) => (
         <div key={id} className='mb-2' onSubmit={(e) => e.preventDefault()}>
           <Label className='capitalize'>{id.replaceAll('-', ' ')}</Label>
-          <Input value={value} onChange={(e) => updateValue(id, e.target.value)} />
+          <Input defaultValue={value} onBlur={(e) => updateValue(id, e.target.value)} />
         </div>
       ))}
     </div>
   );
-}
+});
