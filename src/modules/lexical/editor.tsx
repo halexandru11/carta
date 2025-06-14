@@ -37,13 +37,14 @@ import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
 import { PlaceholderNode } from './nodes/placeholder-node';
 import ContextMenuPlugin from './plugins/context-menu';
+import FloatingTextFormatToolbarPlugin from './plugins/floating-text-format-toolbar-plugin';
 import { LlmPlugin } from './plugins/llm-plugin';
 import { LoadDefaultContentPlugin } from './plugins/load-default-content-plugin';
 import { PlaceholderPlugin } from './plugins/placeholder-plugin';
 import { SavePlugin } from './plugins/save-plugin';
+import { TableActionMenuPlugin } from './plugins/table-action-menu-plugin';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
 import { parseAllowedColor, parseAllowedFontSize } from './style-config';
-import FloatingTextFormatToolbarPlugin from './plugins/floating-text-format-toolbar-plugin';
 
 const placeholder = 'Enter some rich text...';
 
@@ -229,7 +230,10 @@ export function Editor(props: EditorProps) {
               <TablePlugin hasCellMerge hasCellBackgroundColor />
               <TabIndentationPlugin />
               {floatingAnchorElem && (
-                <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+                <>
+                  <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+                  <TableActionMenuPlugin anchorElem={floatingAnchorElem} cellMerge />
+                </>
               )}
             </div>
           </div>

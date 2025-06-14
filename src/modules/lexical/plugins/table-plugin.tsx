@@ -22,7 +22,7 @@ import { TableIcon } from 'lucide-react';
 export function TablePlugin() {
   const [rows, setRows] = useState(3);
   const [columns, setColumns] = useState(5);
-  const [includeHeaders, setIncludeHeaders] = useState(true);
+  const [includeHeaders, setIncludeHeaders] = useState(false);
   const [editor] = useLexicalComposerContext();
 
   const onAddTable = () => {

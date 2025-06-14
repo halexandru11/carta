@@ -25,7 +25,7 @@ import { $isTableNode, $isTableSelection } from '@lexical/table';
 import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
 import {
   Color,
-  ColorPicker,
+  ColorPickerPopover,
   DEFAULT_FONT_BG_COLOR,
   DEFAULT_FONT_COLOR,
 } from '~/components/custom/color-picker';
@@ -376,7 +376,7 @@ export function ToolbarPlugin() {
       >
         <StrikethroughIcon className='size-4' />
       </Button>
-      <ColorPicker color={fontColor} onColorChange={onFontColorSelect}>
+      <ColorPickerPopover color={fontColor} onColorChange={onFontColorSelect}>
         <Button
           size='icon-sm'
           variant='ghost-secondary'
@@ -385,8 +385,8 @@ export function ToolbarPlugin() {
         >
           <ALargeSmallIcon />
         </Button>
-      </ColorPicker>
-      <ColorPicker color={bgColor} onColorChange={onBgColorSelect}>
+      </ColorPickerPopover>
+      <ColorPickerPopover color={bgColor} onColorChange={onBgColorSelect}>
         <Button
           size='icon-sm'
           variant='ghost-secondary'
@@ -395,7 +395,7 @@ export function ToolbarPlugin() {
         >
           <PaintBucketIcon />
         </Button>
-      </ColorPicker>
+      </ColorPickerPopover>
       <Separator orientation='vertical' className='mx-1 h-6' />
       <Button
         size='icon-sm'

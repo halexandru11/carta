@@ -47,7 +47,7 @@ type ColorPickerProps = {
   children: React.ReactNode;
 };
 
-export function ColorPicker({
+export function ColorPickerPopover({
   color: propsColor = 'var(--text)',
   onColorChange,
   children,
@@ -84,5 +84,32 @@ export function ColorPicker({
         </div>
       </PopoverContent>
     </Popover>
+  );
+}
+
+export function ColorPickerContent({ onColorChange }: Pick<ColorPickerProps, 'onColorChange'>) {
+  const handleColorChange = useCallback((c: Color) => onColorChange?.(c), [onColorChange]);
+
+  return (
+    <div className='grid grid-cols-7 gap-1.5'>
+      {ColorfulColor.map((c) => (
+        <Button
+          key={c}
+          size='icon-xs'
+          style={{ backgroundColor: c }}
+          onClick={() => handleColorChange(c)}
+        />
+      ))}
+      <div className='col-span-full h-1.5' />
+      {NonColorfulColor.map((c) => (
+        <Button
+          key={c}
+          size='icon-xs'
+          className='border border-overlay1'
+          style={{ backgroundColor: c }}
+          onClick={() => handleColorChange(c)}
+        />
+      ))}
+    </div>
   );
 }
