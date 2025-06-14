@@ -29,10 +29,14 @@ export const catppuccinTheme: EditorThemeClasses = {
     ol: 'max-w-md space-y-1 list-decimal list-inside',
     ul: 'max-w-md space-y-1 list-disc list-inside',
     listitem: 'max-w-md space-y-1',
-    listitemChecked: "max-w-md outline-none space-y-1 list-none before:cursor-pointer before:content-['✓'] before:text-base before:inline-flex before:items-center before:justify-center before:mr-2 before:size-4 before:bg-primary before:rounded",
-    listitemUnchecked: "max-w-md outline-none space-y-1 list-none text-muted-foreground before:cursor-pointer before:content-[' '] before:inline-block before:align-middle before:mr-2 before:h-4 before:w-4 before:border before:border-primary before:rounded",
+    listitemChecked:
+      "max-w-md outline-none space-y-1 list-none before:cursor-pointer before:content-['✓'] before:text-base before:inline-flex before:items-center before:justify-center before:mr-2 before:size-4 before:bg-primary before:rounded",
+    listitemUnchecked:
+      "max-w-md outline-none space-y-1 list-none text-muted-foreground before:cursor-pointer before:content-[' '] before:inline-block before:align-middle before:mr-2 before:h-4 before:w-4 before:border before:border-primary before:rounded",
   },
   hr: 'border-t-[2px] border-input',
+  table: 'border-collapse',
   tableCell: 'min-w-10 border border-overlay0 p-2',
   tableCellHeader: 'bg-surface0',
+  tableCellSelected: 'border-text opacity-70',
 };

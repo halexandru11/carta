@@ -33,6 +33,7 @@ import {
 } from 'lexical';
 
 import { catppuccinTheme } from './catppuccin-theme';
+import { ExtendedTextNode } from './nodes/extended-text-node';
 import { ImageNode } from './nodes/image-node';
 import { PageBreakNode } from './nodes/page-break-node';
 import { PlaceholderNode } from './nodes/placeholder-node';
@@ -149,6 +150,12 @@ const editorConfig = {
   namespace: 'Carta',
   nodes: [
     AutoLinkNode,
+    ExtendedTextNode,
+    {
+      replace: TextNode,
+      with: (node: TextNode) => new ExtendedTextNode(node.__text),
+      withKlass: ExtendedTextNode,
+    },
     HeadingNode,
     HorizontalRuleNode,
     ImageNode,
@@ -161,7 +168,6 @@ const editorConfig = {
     TableCellNode,
     TableNode,
     TableRowNode,
-    TextNode,
   ],
   onError(error: Error) {
     throw error;
@@ -207,7 +213,7 @@ export function Editor(props: EditorProps) {
                 contentEditable={
                   <div ref={onRef}>
                     <ContentEditable
-                      className='caret-subtext-1 relative min-h-[600px] w-full resize-none rounded-md bg-card p-4 text-text outline-none'
+                      className='caret-subtext-1 relative max-h-[calc(100dvh-7rem)] min-h-[600px] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none'
                       aria-placeholder={placeholder}
                       placeholder={
                         <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>

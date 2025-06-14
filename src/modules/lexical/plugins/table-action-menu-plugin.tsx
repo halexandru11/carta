@@ -8,9 +8,7 @@ import {
   $deleteTableRow__EXPERIMENTAL,
   $getNodeTriplet,
   $getTableCellNodeFromLexicalNode,
-  $getTableColumnIndexFromTableCellNode,
   $getTableNodeFromLexicalNodeOrThrow,
-  $getTableRowIndexFromTableCellNode,
   $insertTableColumn__EXPERIMENTAL,
   $insertTableRow__EXPERIMENTAL,
   $isTableCellNode,
@@ -19,9 +17,7 @@ import {
   $unmergeCell,
   getTableObserverFromTableElement,
   HTMLTableElementWithWithTableSelectionState,
-  TableCellHeaderStates,
   TableCellNode,
-  TableRowNode,
   TableSelection,
 } from '@lexical/table';
 import { ColorPickerContent } from '~/components/custom/color-picker';
@@ -140,18 +136,12 @@ function $selectLastDescendant(node: ElementNode): void {
 }
 
 type TableCellActionMenuProps = Readonly<{
-  contextRef: { current: null | HTMLElement };
   tableCellNode: TableCellNode;
   cellMerge: boolean;
 }>;
 
-function TableActionMenu({
-  tableCellNode: _tableCellNode,
-  contextRef,
-  cellMerge,
-}: TableCellActionMenuProps) {
+function TableActionMenu({ tableCellNode: _tableCellNode, cellMerge }: TableCellActionMenuProps) {
   const [editor] = useLexicalComposerContext();
-  const dropDownRef = useRef<HTMLDivElement | null>(null);
   const [tableCellNode, updateTableCellNode] = useState(_tableCellNode);
   const [selectionCounts, updateSelectionCounts] = useState({
     columns: 1,
@@ -193,52 +183,6 @@ function TableActionMenu({
     });
   }, [editor]);
 
-  useEffect(() => {
-    const menuButtonElement = contextRef.current;
-    const dropDownElement = dropDownRef.current;
-    const rootElement = editor.getRootElement();
-
-    if (menuButtonElement != null && dropDownElement != null && rootElement != null) {
-      const rootEleRect = rootElement.getBoundingClientRect();
-      const menuButtonRect = menuButtonElement.getBoundingClientRect();
-      dropDownElement.style.opacity = '1';
-      const dropDownElementRect = dropDownElement.getBoundingClientRect();
-      const margin = 5;
-      let leftPosition = menuButtonRect.right + margin;
-      if (
-        leftPosition + dropDownElementRect.width > window.innerWidth ||
-        leftPosition + dropDownElementRect.width > rootEleRect.right
-      ) {
-        const position = menuButtonRect.left - dropDownElementRect.width - margin;
-        leftPosition = (position < 0 ? margin : position) + window.pageXOffset;
-      }
-      dropDownElement.style.left = `${leftPosition + window.pageXOffset}px`;
-
-      let topPosition = menuButtonRect.top;
-      if (topPosition + dropDownElementRect.height > window.innerHeight) {
-        const position = menuButtonRect.bottom - dropDownElementRect.height;
-        topPosition = (position < 0 ? margin : position) + window.pageYOffset;
-      }
-      dropDownElement.style.top = `${topPosition + +window.pageYOffset}px`;
-    }
-  }, [contextRef, dropDownRef, editor]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropDownRef.current != null &&
-        contextRef.current != null &&
-        !dropDownRef.current.contains(event.target as Node) &&
-        !contextRef.current.contains(event.target as Node)
-      ) {
-      }
-    }
-
-    window.addEventListener('click', handleClickOutside);
-
-    return () => window.removeEventListener('click', handleClickOutside);
-  }, [contextRef]);
-
   const clearTableSelection = useCallback(() => {
     editor.update(() => {
       if (tableCellNode.isAttached()) {
@@ -265,7 +209,7 @@ function TableActionMenu({
     });
   }, [editor, tableCellNode]);
 
-  const mergeTableCellsAtSelection = () => {
+  function mergeTableCellsAtSelection() {
     editor.update(() => {
       const selection = $getSelection();
       if ($isTableSelection(selection)) {
@@ -302,11 +246,11 @@ function TableActionMenu({
     });
   };
 
-  const unmergeTableCellsAtSelection = () => {
+  function unmergeTableCellsAtSelection() {
     editor.update(() => {
       $unmergeCell();
     });
-  };
+  }
 
   const insertTableRowAtSelection = useCallback(
     (shouldInsertAfter: boolean) => {
@@ -348,75 +292,6 @@ function TableActionMenu({
       $deleteTableColumn__EXPERIMENTAL();
     });
   }, [editor]);
-
-  const toggleTableRowIsHeader = useCallback(() => {
-    editor.update(() => {
-      const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
-
-      const tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
-
-      const tableRows = tableNode.getChildren();
-
-      if (tableRowIndex >= tableRows.length || tableRowIndex < 0) {
-        throw new Error('Expected table cell to be inside of table row.');
-      }
-
-      const tableRow = tableRows[tableRowIndex];
-
-      if (!$isTableRowNode(tableRow)) {
-        throw new Error('Expected table row');
-      }
-
-      tableRow.getChildren().forEach((tableCell) => {
-        if (!$isTableCellNode(tableCell)) {
-          throw new Error('Expected table cell');
-        }
-
-        tableCell.toggleHeaderStyle(TableCellHeaderStates.ROW);
-      });
-
-      clearTableSelection();
-    });
-  }, [editor, tableCellNode, clearTableSelection]);
-
-  const toggleTableColumnIsHeader = useCallback(() => {
-    editor.update(() => {
-      const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
-
-      const tableColumnIndex = $getTableColumnIndexFromTableCellNode(tableCellNode);
-
-      const tableRows = tableNode.getChildren<TableRowNode>();
-      const maxRowsLength = Math.max(...tableRows.map((row) => row.getChildren().length));
-
-      if (tableColumnIndex >= maxRowsLength || tableColumnIndex < 0) {
-        throw new Error('Expected table cell to be inside of table row.');
-      }
-
-      for (let r = 0; r < tableRows.length; r++) {
-        const tableRow = tableRows[r];
-
-        if (!$isTableRowNode(tableRow)) {
-          throw new Error('Expected table row');
-        }
-
-        const tableCells = tableRow.getChildren();
-        if (tableColumnIndex >= tableCells.length) {
-          // if cell is outside of bounds for the current row (for example various merge cell cases) we shouldn't highlight it
-          continue;
-        }
-
-        const tableCell = tableCells[tableColumnIndex];
-
-        if (!$isTableCellNode(tableCell)) {
-          throw new Error('Expected table cell');
-        }
-
-        tableCell.toggleHeaderStyle(TableCellHeaderStates.COLUMN);
-      }
-
-      clearTableSelection();
-    });
-  }, [editor, tableCellNode, clearTableSelection]);
 
   const handleCellBackgroundColor = useCallback(
     (value: string) => {
@@ -522,29 +397,11 @@ function TableActionMenu({
         <DropdownMenuItem onSelect={() => deleteTableAtSelection()} data-test-id='table-delete'>
           Delete table
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => toggleTableRowIsHeader()}>
-          {(tableCellNode.__headerState & TableCellHeaderStates.ROW) === TableCellHeaderStates.ROW
-            ? 'Remove'
-            : 'Add'}{' '}
-          row header
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={() => toggleTableColumnIsHeader()}
-          data-test-id='table-column-header'
-        >
-          {(tableCellNode.__headerState & TableCellHeaderStates.COLUMN) ===
-          TableCellHeaderStates.COLUMN
-            ? 'Remove'
-            : 'Add'}{' '}
-          column header
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </>
   );
 }
 
-// function TableCellActionMenuContainer({
 export function TableActionMenuPlugin({
   anchorElem = document.body,
   cellMerge = false,
@@ -555,7 +412,6 @@ export function TableActionMenuPlugin({
   const [editor] = useLexicalComposerContext();
 
   const menuButtonRef = useRef(null);
-  const menuRootRef = useRef(null);
 
   const [tableCellNode, setTableMenuCellNode] = useState<TableCellNode | null>(null);
 
@@ -631,12 +487,6 @@ export function TableActionMenuPlugin({
     }
   }, [menuButtonRef, tableCellNode, editor, anchorElem]);
 
-  const prevTableCellDOM = useRef(tableCellNode);
-
-  useEffect(() => {
-    prevTableCellDOM.current = tableCellNode;
-  }, [prevTableCellDOM, tableCellNode]);
-
   return (
     <div className='absolute left-1 top-0 will-change-transform' ref={menuButtonRef}>
       {tableCellNode != null && (
@@ -646,11 +496,7 @@ export function TableActionMenuPlugin({
               <ChevronDownIcon />
             </Button>
           </DropdownMenuTrigger>
-          <TableActionMenu
-            contextRef={menuRootRef}
-            tableCellNode={tableCellNode}
-            cellMerge={cellMerge}
-          />
+          <TableActionMenu tableCellNode={tableCellNode} cellMerge={cellMerge} />
         </DropdownMenu>
       )}
     </div>
