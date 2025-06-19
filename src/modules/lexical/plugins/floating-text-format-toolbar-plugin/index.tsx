@@ -15,12 +15,7 @@ import {
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
 } from 'lexical';
-import {
-  BoldIcon,
-  ItalicIcon,
-  StrikethroughIcon,
-  UnderlineIcon,
-} from 'lucide-react';
+import { BoldIcon, ItalicIcon, StrikethroughIcon, UnderlineIcon } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
 import { getDOMRangeRect } from '../../utils/get-dom-range-rect';
