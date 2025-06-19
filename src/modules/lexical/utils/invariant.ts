@@ -1,8 +1,4 @@
-export default function invariant(
-  cond?: boolean,
-  message?: string,
-  ...args: string[]
-): asserts cond {
+export default function invariant(cond?: boolean, message?: string): asserts cond {
   if (cond) {
     return;
   }

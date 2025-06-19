@@ -19,13 +19,8 @@ Table.displayName = 'Table';
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement> & {
-    /**
-     * Show only the last header row when scrolling a long table
-     */
-    collapsibleRows?: boolean;
-  }
->(({ className, children, collapsibleRows, ...props }, ref) => (
+  React.HTMLAttributes<HTMLTableSectionElement> & {}
+>(({ className, children, ...props }, ref) => (
   <thead
     ref={ref}
     className={cn(
@@ -41,7 +36,7 @@ const TableHeader = React.forwardRef<
   >
     {children}
     <TableRow>
-      <TableHead colSpan={100} className='h-px p-0 bg-border' />
+      <TableHead colSpan={100} className='h-px bg-border p-0' />
     </TableRow>
   </thead>
 ));

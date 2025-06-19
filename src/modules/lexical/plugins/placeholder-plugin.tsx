@@ -6,7 +6,7 @@ import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
 
 import { $createPlaceholderNode, PlaceholderNode } from '../nodes/placeholder-node';
 
-export const PlaceholderPlugin = memo(() => {
+const PlaceholderPlugin = memo(() => {
   const [editor] = useLexicalComposerContext();
   const [placeholders, setPlaceholders] = useState<Record<string, string>>({});
 
@@ -89,3 +89,6 @@ export const PlaceholderPlugin = memo(() => {
     </div>
   );
 });
+
+PlaceholderPlugin.displayName = 'PlaceholderPlugin';
+export { PlaceholderPlugin };
