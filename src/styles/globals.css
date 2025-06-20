@@ -62,7 +62,8 @@
     --chart-4: var(--pink);
     --chart-5: var(--marron);
     --radius: 0.75rem;
-    --sidebar: var(--mantle);
+
+    --sidebar: var(--base);
     --sidebar-foreground: var(--text);
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
@@ -131,7 +132,8 @@
     --chart-4: var(--pink);
     --chart-5: var(--marron);
     --radius: 0.75rem;
-    --sidebar: var(--mantle);
+
+    --sidebar: var(--crust);
     --sidebar-foreground: var(--text);
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);

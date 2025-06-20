@@ -67,7 +67,6 @@ export function PlaceholderProvider(props: PlaceholderProviderProps) {
           }
         });
         setPlaceholders(allPlaceholders);
-        console.log('UPDATE');
       });
     });
 

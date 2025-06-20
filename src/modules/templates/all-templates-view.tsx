@@ -9,7 +9,8 @@ import { TemplatesTable } from './templates-table';
 export function AllTemplatesView() {
   return (
     <div className='p-2 space-y-2'>
-      <div className='flex justify-end'>
+      <div className='flex justify-between items-center'>
+        <h1 className='text-2xl font-semibold'>Templates</h1>
         <CreateTemplateDialog>
           <Button>
             <PlusIcon />
