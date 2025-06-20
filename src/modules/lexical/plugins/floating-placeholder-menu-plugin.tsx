@@ -1,4 +1,5 @@
-// FloatingPlaceholderMenuPlugin.tsx
+'use client';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import {
@@ -9,7 +10,14 @@ import {
   CommandItem,
   CommandList,
 } from '~/components/ui/command';
-import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
+import {
+  $getSelection,
+  $isRangeSelection,
+  $isTextNode,
+  COMMAND_PRIORITY_LOW,
+  KEY_DOWN_COMMAND,
+  KEY_ESCAPE_COMMAND,
+} from 'lexical';
 import { createPortal } from 'react-dom';
 
 import { $createPlaceholderNode } from '../nodes/placeholder-node';
@@ -18,56 +26,16 @@ import { setFloatingElemPosition } from '../utils/set-floating-elem-position';
 
 const SUGGESTIONS = ['company-name', 'contact-name', 'phone', 'email', 'address', 'current-date'];
 
-function PlaceholderMenu({
+export function FloatingPlaceholderMenuPlugin({
   anchorElem,
-  rect,
-  query,
-  onSelect,
 }: {
   anchorElem: HTMLElement;
-  rect: DOMRect;
-  query: string;
-  onSelect: (value: string) => void;
-}) {
-  const menuRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (menuRef.current && rect) {
-      setFloatingElemPosition(rect, menuRef.current, anchorElem);
-    }
-  }, [rect, anchorElem]);
-
-  return (
-    <div
-      ref={menuRef}
-      className='absolute left-0 top-0 z-50 w-64 rounded-md border bg-background shadow-md'
-    >
-      <Command className='w-full'>
-        <CommandInput value={query} placeholder='Search placeholders...' className='border-none' />
-        <CommandList>
-          <CommandGroup>
-            {SUGGESTIONS.map((s) => (
-              <CommandItem key={s} value={s} onSelect={() => onSelect(s)}>
-                {s}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-          <CommandEmpty>No matches found.</CommandEmpty>
-        </CommandList>
-      </Command>
-    </div>
-  );
-}
-
-export function FloatingPlaceholderMenuPlugin({
-  anchorElem = document.body,
-}: {
-  anchorElem?: HTMLElement;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [showMenu, setShowMenu] = useState(false);
   const [query, setQuery] = useState('');
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const updateMenu = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -91,7 +59,7 @@ export function FloatingPlaceholderMenuPlugin({
         if (nativeSelection) {
           const rangeRect = getDOMRangeRect(nativeSelection, anchorElem);
           if (rangeRect) {
-            setQuery(match[1]);
+            setQuery(match[1] ?? '');
             setRect(rangeRect);
             setShowMenu(true);
           }
@@ -108,6 +76,12 @@ export function FloatingPlaceholderMenuPlugin({
     });
   }, [editor, updateMenu]);
 
+  useEffect(() => {
+    if (menuRef.current && rect) {
+      setFloatingElemPosition(rect, menuRef.current, anchorElem);
+    }
+  }, [rect, anchorElem]);
+
   const handleSelect = (selected: string) => {
     editor.update(() => {
       const selection = $getSelection();
@@ -122,10 +96,6 @@ export function FloatingPlaceholderMenuPlugin({
         const start = text.lastIndexOf(`{{${match[1]}`);
         const [before] = anchorNode.splitText(start);
         before?.replace($createPlaceholderNode(selected, selected));
-
-        // const [placeholderText, after] = rest.splitText(2 + match[1].length);
-        // placeholderText?.setText(`{{${selected}}}`);
-        // selection.anchor.set(before.getKey(), before.getTextContentSize());
       }
     });
     setShowMenu(false);
@@ -134,7 +104,24 @@ export function FloatingPlaceholderMenuPlugin({
   if (!showMenu || !rect) return null;
 
   return createPortal(
-    <PlaceholderMenu anchorElem={anchorElem} rect={rect} query={query} onSelect={handleSelect} />,
+    <div
+      ref={menuRef}
+      className='absolute left-0 top-0 z-50 w-64 rounded-md border bg-background shadow-md'
+    >
+      <Command className='w-full'>
+        <CommandInput value={query} placeholder='Search placeholders...' className='border-none' />
+        <CommandList>
+          <CommandGroup>
+            {SUGGESTIONS.map((s) => (
+              <CommandItem key={s} value={s} onSelect={() => handleSelect(s)}>
+                {s}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandEmpty>No matches found.</CommandEmpty>
+        </CommandList>
+      </Command>
+    </div>,
     anchorElem,
   );
 }

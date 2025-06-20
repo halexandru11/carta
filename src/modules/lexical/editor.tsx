@@ -197,7 +197,6 @@ export function Editor(props: EditorProps) {
         <LlmPlugin />
         <div className='grid grid-cols-[14rem,minmax(0,1fr)] gap-x-2'>
           <PlaceholderPlugin />
-          <FloatingPlaceholderMenuPlugin anchorElem={floatingAnchorElem ?? undefined} />
           <div>
             <div className='mb-2 flex items-center justify-between'>
               <h2 className='text-lg font-medium'>{props.title}</h2>
@@ -241,6 +240,7 @@ export function Editor(props: EditorProps) {
                 <>
                   <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
                   <TableActionMenuPlugin anchorElem={floatingAnchorElem} cellMerge />
+                  <FloatingPlaceholderMenuPlugin anchorElem={floatingAnchorElem} />
                 </>
               )}
             </div>
