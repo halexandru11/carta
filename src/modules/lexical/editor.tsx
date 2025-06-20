@@ -41,7 +41,11 @@ import ContextMenuPlugin from './plugins/context-menu';
 import FloatingTextFormatToolbarPlugin from './plugins/floating-text-format-toolbar-plugin';
 import { LlmPlugin } from './plugins/llm-plugin';
 import { LoadDefaultContentPlugin } from './plugins/load-default-content-plugin';
-import { PlaceholderPlugin } from './plugins/placeholder-plugin';
+import {
+  FloatingPlaceholderMenuPlugin,
+  PlaceholderProvider,
+  PlaceholderSidebarPlugin,
+} from './plugins/placeholder-plugin';
 import { SavePlugin } from './plugins/save-plugin';
 import { TableActionMenuPlugin } from './plugins/table-action-menu-plugin';
 import { ToolbarPlugin } from './plugins/toolbar-plugin';
@@ -192,59 +196,62 @@ export function Editor(props: EditorProps) {
 
   return (
     <LexicalComposer initialConfig={editorConfig}>
-      <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
-        <LlmPlugin />
-        <div className='grid grid-cols-[14rem,minmax(0,1fr)] gap-x-2'>
-          <PlaceholderPlugin />
-          <div>
-            <div className='mb-2 flex items-center justify-between'>
-              <h2 className='text-lg font-medium'>{props.title}</h2>
-              <SavePlugin
-                onSave={async (htmlString) => {
-                  if (props.onSave) {
-                    await props.onSave({ content: htmlString });
+      <PlaceholderProvider>
+        <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
+          <LlmPlugin />
+          <div className='grid grid-cols-[14rem,minmax(0,1fr)] gap-x-2'>
+            <PlaceholderSidebarPlugin />
+            <div>
+              <div className='mb-2 flex items-center justify-between'>
+                <h2 className='text-lg font-medium'>{props.title}</h2>
+                <SavePlugin
+                  onSave={async (htmlString) => {
+                    if (props.onSave) {
+                      await props.onSave({ content: htmlString });
+                    }
+                  }}
+                />
+              </div>
+              <ToolbarPlugin />
+              <div className='relative'>
+                <RichTextPlugin
+                  contentEditable={
+                    <div ref={onRef}>
+                      <ContentEditable
+                        className='caret-subtext-1 relative max-h-[calc(100dvh-7rem)] min-h-[600px] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none'
+                        aria-placeholder={placeholder}
+                        placeholder={
+                          <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
+                            {placeholder}
+                          </div>
+                        }
+                      />
+                    </div>
                   }
-                }}
-              />
-            </div>
-            <ToolbarPlugin />
-            <div className='relative'>
-              <RichTextPlugin
-                contentEditable={
-                  <div ref={onRef}>
-                    <ContentEditable
-                      className='caret-subtext-1 relative max-h-[calc(100dvh-7rem)] min-h-[600px] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none'
-                      aria-placeholder={placeholder}
-                      placeholder={
-                        <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>
-                          {placeholder}
-                        </div>
-                      }
-                    />
-                  </div>
-                }
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <AutoFocusPlugin />
-              <CheckListPlugin />
-              <ClearEditorPlugin />
-              <ContextMenuPlugin />
-              <ListPlugin />
-              <HistoryPlugin />
-              <HorizontalRulePlugin />
-              <LoadDefaultContentPlugin defaultContent={props.defaultContent} />
-              <TablePlugin hasCellMerge hasCellBackgroundColor />
-              <TabIndentationPlugin />
-              {floatingAnchorElem && (
-                <>
-                  <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
-                  <TableActionMenuPlugin anchorElem={floatingAnchorElem} cellMerge />
-                </>
-              )}
+                  ErrorBoundary={LexicalErrorBoundary}
+                />
+                <AutoFocusPlugin />
+                <CheckListPlugin />
+                <ClearEditorPlugin />
+                <ContextMenuPlugin />
+                <ListPlugin />
+                <HistoryPlugin />
+                <HorizontalRulePlugin />
+                <LoadDefaultContentPlugin defaultContent={props.defaultContent} />
+                <TablePlugin hasCellMerge hasCellBackgroundColor />
+                <TabIndentationPlugin />
+                {floatingAnchorElem && (
+                  <>
+                    <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem} />
+                    <TableActionMenuPlugin anchorElem={floatingAnchorElem} cellMerge />
+                    <FloatingPlaceholderMenuPlugin anchorElem={floatingAnchorElem} />
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </PlaceholderProvider>
     </LexicalComposer>
   );
 }
