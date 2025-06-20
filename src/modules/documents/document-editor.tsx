@@ -22,6 +22,7 @@ export function DocumentEditor(props: DocumentEditorProps) {
       title={props.doc?.title ?? undefined}
       defaultContent={props.doc?.content ?? undefined}
       onSave={handleSave}
+      showPlaceholderSidebar
     />
   );
 }

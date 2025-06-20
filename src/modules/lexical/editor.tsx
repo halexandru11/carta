@@ -183,6 +183,7 @@ type EditorProps = {
   title?: string;
   defaultContent?: string;
   onSave?: (doc: Omit<DocumentUpdate, 'id'>) => Promise<void>;
+  showPlaceholderSidebar?: boolean;
 };
 
 export function Editor(props: EditorProps) {
@@ -199,8 +200,14 @@ export function Editor(props: EditorProps) {
       <PlaceholderProvider>
         <div className='relative mx-auto h-full w-full max-w-[1600px] rounded-sm text-start'>
           <LlmPlugin />
-          <div className='grid grid-cols-[14rem,minmax(0,1fr)] gap-x-2'>
-            <PlaceholderSidebarPlugin />
+          <div
+            className={
+              props.showPlaceholderSidebar
+                ? 'grid grid-cols-[14rem,minmax(0,1fr)] gap-x-2'
+                : 'grid grid-cols-1'
+            }
+          >
+            {props.showPlaceholderSidebar && <PlaceholderSidebarPlugin />}
             <div>
               <div className='mb-2 flex items-center justify-between'>
                 <h2 className='text-lg font-medium'>{props.title}</h2>
