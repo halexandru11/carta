@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
-import { clientsGetAll } from '~/server/actions/clients';
+import { clientsGetAll } from '~/server/data/clients';
 
 export async function ClientsTable() {
   const clients = await clientsGetAll();

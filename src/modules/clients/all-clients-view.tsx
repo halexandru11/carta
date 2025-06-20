@@ -8,7 +8,7 @@ import { CreateClientDialog } from './create-client-dialog';
 
 export function AllClientsView() {
   return (
-    <div className='space-y-2 p-2'>
+    <div className='space-y-2'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-semibold'>Clients</h1>
         <CreateClientDialog>

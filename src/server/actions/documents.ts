@@ -11,16 +11,9 @@ import {
 } from '~/schemas/documents';
 import { eq } from 'drizzle-orm';
 
+import { documentGet } from '../data/documents';
 import { db } from '../db';
 import { documents } from '../db/schema';
-
-export async function documentsGetAll() {
-  return await db.select().from(documents);
-}
-
-export async function documentGet(id: number) {
-  return (await db.select().from(documents).where(eq(documents.id, id)).limit(1))[0];
-}
 
 export async function documentCreate(payload: DocumentCreate) {
   const { success, data } = documentCreateSchema.safeParse(payload);

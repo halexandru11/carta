@@ -11,9 +11,5 @@ type DocumentPageProps = {
 export default async function DocumentPage(props: DocumentPageProps) {
   const { documentId } = await props.params;
 
-  return (
-    <div className='p-2'>
-      <DocumentView documentId={documentId} />
-    </div>
-  );
+  return <DocumentView documentId={documentId} />;
 }

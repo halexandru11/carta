@@ -11,9 +11,5 @@ type TemplatePageProps = {
 export default async function TemplatePage(props: TemplatePageProps) {
   const { templateId } = await props.params;
 
-  return (
-    <div className='p-2'>
-      <TemplateView templateId={templateId} />
-    </div>
-  );
+  return <TemplateView templateId={templateId} />;
 }

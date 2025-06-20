@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
-import { documentsGetAll } from '~/server/actions/documents';
+import { documentsGetAll } from '~/server/data/documents';
 import { ArrowRightIcon } from 'lucide-react';
 
 import { DocumentsTableActions } from './documents-table-actions';

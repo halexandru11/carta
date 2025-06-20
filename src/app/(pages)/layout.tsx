@@ -12,7 +12,7 @@ export default function PagesLayout(props: PagesLayoutProps) {
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <SidebarInset>
-        <div className='mx-auto max-w-7xl w-full'>{props.children}</div>
+        <div className='mx-auto w-full max-w-7xl p-2'>{props.children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

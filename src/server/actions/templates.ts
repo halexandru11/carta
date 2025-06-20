@@ -11,16 +11,9 @@ import {
 } from '~/schemas/templates';
 import { eq } from 'drizzle-orm';
 
+import { templateGet } from '../data/templates';
 import { db } from '../db';
 import { templates } from '../db/schema';
-
-export async function templatesGetAll() {
-  return await db.select().from(templates);
-}
-
-export async function templateGet(id: number) {
-  return (await db.select().from(templates).where(eq(templates.id, id)).limit(1))[0];
-}
 
 export async function templateCreate(payload: TemplateCreate) {
   const { success, data } = templateCreateSchema.safeParse(payload);
