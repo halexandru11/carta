@@ -18,8 +18,7 @@ import { $createPlaceholderNode } from '../../nodes/placeholder-node';
 import { getDOMRangeRect } from '../../utils/get-dom-range-rect';
 import { setFloatingElemPosition } from '../../utils/set-floating-elem-position';
 import { usePlaceholderContext } from './placeholder-provider';
-
-const SUGGESTIONS = ['company-name', 'contact-name', 'phone', 'email', 'address', 'current-date'];
+import { SUGGESTIONS } from '~/lib/constants';
 
 export function FloatingPlaceholderMenuPlugin({
   anchorElem,

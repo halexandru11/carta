@@ -3,6 +3,8 @@ import { z } from 'zod';
 export const documentCreateSchema = z.object({
   title: z.string().min(1, 'Required'),
   content: z.string(),
+  templateId: z.string(),
+  clientId: z.string(),
 });
 
 export const documentUpdateSchema = z.object({

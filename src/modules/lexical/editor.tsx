@@ -235,7 +235,7 @@ export function Editor(props: EditorProps) {
                     <div ref={onRef}>
                       <ContentEditable
                         ref={editorRef}
-                        className='caret-subtext-1 relative max-h-[calc(100dvh-7rem)] min-h-[400px] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none print:max-h-fit'
+                        className='caret-subtext-1 relative h-[calc(100dvh-7rem)] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none print:h-fit print:max-h-fit'
                         aria-placeholder={placeholder}
                         placeholder={
                           <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>

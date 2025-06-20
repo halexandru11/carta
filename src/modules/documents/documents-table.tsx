@@ -10,14 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
-import { documentsGetAll } from '~/server/data/documents';
+import { DocumentType } from '~/server/types';
 import { ArrowRightIcon } from 'lucide-react';
 
 import { DocumentsTableActions } from './documents-table-actions';
 
-export async function DocumentsTable() {
-  const docs = await documentsGetAll();
+type DocumentsTableProps = {
+  docs: DocumentType[];
+};
 
+export async function DocumentsTable(props: DocumentsTableProps) {
   return (
     <Table classNameWrapper='max-h-[calc(100dvh-4rem)]'>
       <TableHeader>
@@ -27,7 +29,7 @@ export async function DocumentsTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {docs.map((doc) => (
+        {props.docs.map((doc) => (
           <TableRow key={doc.id}>
             <TableCell>
               <Button

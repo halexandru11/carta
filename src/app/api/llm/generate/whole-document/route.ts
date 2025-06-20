@@ -1,6 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { getRelevantHtmlContent, trimHtmlBlockSyntax } from '~/lib/llm-utils';
 import { generateText } from 'ai';
+import { SUGGESTIONS } from '~/lib/constants';
 
 export async function POST(req: Request) {
   const { prompt }: { prompt: string } = await req.json();
@@ -17,6 +18,9 @@ export async function POST(req: Request) {
         - you help users generate a HTML <div /> for contract documents
         - keep your responses limited to only the HTML <div /> content
         - when you need to use placeholders, follow this format: {{placeholder-name}}
+        - here are all the placeholder names: ${SUGGESTIONS.join(', ')}
+        - use only placeholders from the ones from the list in the previous point
+        - the HTML for placeholders looks like this: <span data-placeholder-id="placeholder-name" data-placeholder-value="placeholder-name" contenteditable="false" style="background: rgb(238, 238, 255); padding: 0px 4px; border-radius: 4px;">placeholder-name</span>
         - your output will be checked against an HTML parser
         - DO NOT respond with text that is NOT HTML, because the parser won't be able to validate your output
       `,
