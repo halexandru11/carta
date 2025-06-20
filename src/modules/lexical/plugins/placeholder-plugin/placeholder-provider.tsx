@@ -75,7 +75,7 @@ export function PlaceholderProvider(props: PlaceholderProviderProps) {
       releaseTextContentListener();
       releaseUpdateListener();
     };
-  }, [editor]);
+  }, [editor, placeholders]);
 
   const updatePlaceholder = useCallback(
     (id: string, newPlaceholder?: string) => {
