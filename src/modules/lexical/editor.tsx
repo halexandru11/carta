@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AutoLinkNode, LinkNode } from '@lexical/link';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
@@ -18,6 +18,7 @@ import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
+import { Button } from '~/components/ui/button';
 import { DocumentUpdate } from '~/schemas/documents';
 import {
   $isTextNode,
@@ -31,6 +32,8 @@ import {
   ParagraphNode,
   TextNode,
 } from 'lexical';
+import { DownloadIcon } from 'lucide-react';
+import { useReactToPrint } from 'react-to-print';
 
 import { catppuccinTheme } from './catppuccin-theme';
 import { ExtendedTextNode } from './nodes/extended-text-node';
@@ -188,6 +191,8 @@ type EditorProps = {
 
 export function Editor(props: EditorProps) {
   const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef: editorRef, documentTitle: props.title });
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
@@ -209,8 +214,8 @@ export function Editor(props: EditorProps) {
           >
             {props.showPlaceholderSidebar && <PlaceholderSidebarPlugin />}
             <div>
-              <div className='mb-2 flex items-center justify-between'>
-                <h2 className='text-lg font-medium'>{props.title}</h2>
+              <div className='mb-2 flex items-center gap-x-2'>
+                <h2 className='mr-auto text-lg font-medium'>{props.title}</h2>
                 <SavePlugin
                   onSave={async (htmlString) => {
                     if (props.onSave) {
@@ -218,6 +223,10 @@ export function Editor(props: EditorProps) {
                     }
                   }}
                 />
+                <Button size='sm' onClick={reactToPrintFn}>
+                  <DownloadIcon />
+                  PDF
+                </Button>
               </div>
               <ToolbarPlugin />
               <div className='relative'>
@@ -225,7 +234,8 @@ export function Editor(props: EditorProps) {
                   contentEditable={
                     <div ref={onRef}>
                       <ContentEditable
-                        className='caret-subtext-1 relative max-h-[calc(100dvh-7rem)] min-h-[400px] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none'
+                        ref={editorRef}
+                        className='caret-subtext-1 relative max-h-[calc(100dvh-7rem)] min-h-[400px] w-full resize-none overflow-y-auto rounded-md bg-card p-4 text-text outline-none print:max-h-fit'
                         aria-placeholder={placeholder}
                         placeholder={
                           <div className='pointer-events-none absolute left-4 top-4 inline-block select-none overflow-hidden text-ellipsis italic text-muted-foreground'>

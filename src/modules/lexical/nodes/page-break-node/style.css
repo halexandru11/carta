@@ -33,3 +33,15 @@
 .selected[type='page-break'] {
   border-color: var(--primary, var(--editor-border));
 }
+
+@media print {
+  [type='page-break'] {
+    visibility: hidden;
+    margin-block: 0;
+    border-block: 0;
+  }
+
+  [type='page-break']::after {
+    display: none !important;
+  }
+}

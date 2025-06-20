@@ -25,7 +25,7 @@ export function SavePlugin(props: SavePluginProps) {
   }
 
   return (
-    <Button size='sm' onClick={handleSave}>
+    <Button size='sm' variant='success' onClick={handleSave}>
       <SaveIcon />
       Save
     </Button>

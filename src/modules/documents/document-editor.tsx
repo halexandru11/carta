@@ -3,10 +3,11 @@
 import { Editor } from '~/modules/lexical/editor';
 import { DocumentUpdate } from '~/schemas/documents';
 import { documentUpdate } from '~/server/actions/documents';
+import { DocumentType } from '~/server/types';
 
 type DocumentEditorProps = {
   documentId: number;
-  doc: any;
+  doc: DocumentType | undefined;
 };
 
 export function DocumentEditor(props: DocumentEditorProps) {

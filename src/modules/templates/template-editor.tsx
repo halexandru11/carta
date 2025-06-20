@@ -3,10 +3,11 @@
 import { Editor } from '~/modules/lexical/editor';
 import { TemplateUpdate } from '~/schemas/templates';
 import { templateUpdate } from '~/server/actions/templates';
+import { TemplateType } from '~/server/types';
 
 type TemplateEditorProps = {
   templateId: number;
-  doc: any;
+  doc: TemplateType | undefined;
 };
 
 export function TemplateEditor(props: TemplateEditorProps) {
