@@ -146,7 +146,11 @@ export function CreateDocumentDialog(props: CreateDocumentDialogProps) {
                           <CommandGroup>
                             {props.clients.map((client) => (
                               <CommandItem
-                                value={client.id.toString()}
+                                value={
+                                  (client.companyName ?? '') +
+                                  (client.contactName ?? '') +
+                                  client.id
+                                }
                                 key={client.id}
                                 onSelect={() => {
                                   form.setValue('clientId', client.id.toString());
@@ -207,7 +211,7 @@ export function CreateDocumentDialog(props: CreateDocumentDialogProps) {
                           <CommandGroup>
                             {props.templates.map((template) => (
                               <CommandItem
-                                value={template.id.toString()}
+                                value={(template.title ?? '') + template.id}
                                 key={template.id}
                                 onSelect={() => {
                                   form.setValue('templateId', template.id.toString());
