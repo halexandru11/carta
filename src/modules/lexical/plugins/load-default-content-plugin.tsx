@@ -44,7 +44,7 @@ export function LoadDefaultContentPlugin(props: LoadDefaultContentPluginProps) {
 
             // Placeholder node
             if (id) {
-              segments.push($createPlaceholderNode(id, id));
+              segments.push($createPlaceholderNode(id));
             }
             lastIndex = startIndex + fullMatch.length;
           }

@@ -107,8 +107,8 @@ export class PlaceholderNode extends DecoratorNode<JSX.Element> {
   }
 }
 
-export function $createPlaceholderNode(id: string, value: string): PlaceholderNode {
-  return new PlaceholderNode(id, value);
+export function $createPlaceholderNode(id: string, value?: string): PlaceholderNode {
+  return new PlaceholderNode(id, value ?? id);
 }
 
 export function $isPlaceholderNode(node: LexicalNode): node is PlaceholderNode {

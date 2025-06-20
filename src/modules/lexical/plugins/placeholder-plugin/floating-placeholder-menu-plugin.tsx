@@ -10,19 +10,14 @@ import {
   CommandItem,
   CommandList,
 } from '~/components/ui/command';
-import {
-  $getSelection,
-  $isRangeSelection,
-  $isTextNode,
-  COMMAND_PRIORITY_LOW,
-  KEY_DOWN_COMMAND,
-  KEY_ESCAPE_COMMAND,
-} from 'lexical';
+import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
+import { CornerDownLeftIcon } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
-import { $createPlaceholderNode } from '../nodes/placeholder-node';
-import { getDOMRangeRect } from '../utils/get-dom-range-rect';
-import { setFloatingElemPosition } from '../utils/set-floating-elem-position';
+import { $createPlaceholderNode } from '../../nodes/placeholder-node';
+import { getDOMRangeRect } from '../../utils/get-dom-range-rect';
+import { setFloatingElemPosition } from '../../utils/set-floating-elem-position';
+import { usePlaceholderContext } from './placeholder-provider';
 
 const SUGGESTIONS = ['company-name', 'contact-name', 'phone', 'email', 'address', 'current-date'];
 
@@ -32,9 +27,10 @@ export function FloatingPlaceholderMenuPlugin({
   anchorElem: HTMLElement;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
+  const { updatePlaceholder } = usePlaceholderContext();
   const [showMenu, setShowMenu] = useState(false);
-  const [query, setQuery] = useState('');
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const queryRef = useRef<HTMLInputElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const updateMenu = useCallback(() => {
@@ -59,7 +55,7 @@ export function FloatingPlaceholderMenuPlugin({
         if (nativeSelection) {
           const rangeRect = getDOMRangeRect(nativeSelection, anchorElem);
           if (rangeRect) {
-            setQuery(match[1] ?? '');
+            // setQuery(match[1] ?? '');
             setRect(rangeRect);
             setShowMenu(true);
           }
@@ -91,12 +87,14 @@ export function FloatingPlaceholderMenuPlugin({
       if (!$isTextNode(anchorNode)) return;
 
       const text = anchorNode.getTextContent();
-      const match = /\{\{([^{}]*)/.exec(text);
-      if (match && match[1]) {
-        const start = text.lastIndexOf(`{{${match[1]}`);
-        const [before] = anchorNode.splitText(start);
-        before?.replace($createPlaceholderNode(selected, selected));
+      const start = text.lastIndexOf('{{');
+      const [first, second] = anchorNode.splitText(start);
+      if (second !== undefined) {
+        second.replace($createPlaceholderNode(selected));
+      } else {
+        first?.replace($createPlaceholderNode(selected));
       }
+      updatePlaceholder(selected);
     });
     setShowMenu(false);
   };
@@ -109,12 +107,25 @@ export function FloatingPlaceholderMenuPlugin({
       className='absolute left-0 top-0 z-50 w-64 rounded-md border bg-background shadow-md'
     >
       <Command className='w-full'>
-        <CommandInput value={query} placeholder='Search placeholders...' className='border-none' />
+        <CommandInput
+          autoFocus
+          ref={queryRef}
+          placeholder='Search placeholders...'
+          className='border-none'
+        />
         <CommandList>
           <CommandGroup>
             {SUGGESTIONS.map((s) => (
-              <CommandItem key={s} value={s} onSelect={() => handleSelect(s)}>
-                {s}
+              <CommandItem
+                key={s}
+                value={s}
+                className={
+                  '[&_svg]:text-transparent [&_svg]:data-[selected=true]:text-accent-foreground'
+                }
+                onSelect={handleSelect}
+              >
+                <span>{s}</span>
+                <CornerDownLeftIcon className='ml-auto shrink-0' />
               </CommandItem>
             ))}
           </CommandGroup>
