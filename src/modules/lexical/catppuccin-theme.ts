@@ -35,8 +35,8 @@ export const catppuccinTheme: EditorThemeClasses = {
       "max-w-md outline-none space-y-1 list-none text-muted-foreground before:cursor-pointer before:content-[' '] before:inline-block before:align-middle before:mr-2 before:h-4 before:w-4 before:border before:border-primary before:rounded",
   },
   hr: 'border-t-[2px] border-input',
-  table: 'border-collapse',
-  tableCell: 'min-w-10 border border-overlay0 p-2',
+  table: 'border-collapse overflow-x-scroll overflow-y-scroll w-max',
+  tableCell: 'min-w-40 border border-overlay0 p-2',
   tableCellHeader: 'bg-surface0',
   tableCellSelected: 'border-text opacity-70',
 };

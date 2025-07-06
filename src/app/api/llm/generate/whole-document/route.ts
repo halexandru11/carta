@@ -19,8 +19,10 @@ export async function POST(req: Request) {
         - keep your responses limited to only the HTML <div /> content
         - when you need to use placeholders, follow this format: {{placeholder-name}}
         - here are all the placeholder names: ${SUGGESTIONS.join(', ')}
-        - use only placeholders from the ones from the list in the previous point
+        - use the placeholders provided and do NOT invent new placeholder
+        - if you cannot find a placeholder you need, then insert 20 underlines
         - the HTML for placeholders looks like this: <span data-placeholder-id="placeholder-name" data-placeholder-value="placeholder-name" contenteditable="false" style="background: rgb(238, 238, 255); padding: 0px 4px; border-radius: 4px;">placeholder-name</span>
+        - the person that provides the services of the contract is Tim Brad, from the company Giraffe Co, from California, with the phone number 012-333-555 and the email brad@giraffe.com 
         - your output will be checked against an HTML parser
         - DO NOT respond with text that is NOT HTML, because the parser won't be able to validate your output
       `,

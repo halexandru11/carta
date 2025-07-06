@@ -100,6 +100,7 @@ export function LlmPlugin() {
                       {...field}
                       placeholder='Generate a short contract for buying a house'
                       className='min-h-20'
+                      spellCheck={false}
                     />
                   </FormControl>
                   <FormMessage />
